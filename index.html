@@ -53,11 +53,9 @@
             transition: all 0.5s ease;
         }
 
-        #app.critical {
-            animation: pulseRed 1s infinite;
-        }
+        #app.critical { animation: pulseRed 1s infinite; }
 
-        h1, h2, h3 { 
+        h1, h2, h3, h4 { 
             text-align: center; 
             margin-top: 0; 
             color: var(--neon-pink);
@@ -66,6 +64,7 @@
             text-transform: uppercase;
         }
         h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        h4 { color: var(--neon-blue); text-shadow: 0 0 5px var(--neon-blue); font-size: 1.5rem; margin-bottom: 0.5rem;}
         
         .hidden { display: none !important; }
         
@@ -135,20 +134,11 @@
             margin-left: 10px;
             position: relative;
         }
-        .meter-fill {
-            height: 100%;
-            width: 100%;
-            transition: width 0.8s ease-in-out, background-color 0.5s ease;
-        }
+        .meter-fill { height: 100%; width: 100%; transition: width 0.8s ease-in-out, background-color 0.5s ease; }
 
         .reality-check { text-align: center; font-size: 1.1rem; color: #aaa; margin: 1rem 0; letter-spacing: 1px;}
 
-        .event-card {
-            border: 1px solid var(--neon-pink);
-            padding: 1rem;
-            background: rgba(255, 0, 170, 0.05);
-            margin-bottom: 1rem;
-        }
+        .event-card { border: 1px solid var(--neon-pink); padding: 1rem; background: rgba(255, 0, 170, 0.05); margin-bottom: 1rem; }
         .step-indicator { font-size: 1.3rem; color: var(--neon-blue); margin-bottom: 0.5rem; text-align: center; font-weight: bold;}
         .event-desc { font-size: 1.4rem; margin-bottom: 1.5rem; text-align: center; line-height: 1.3;}
         
@@ -171,21 +161,23 @@
         .turn-info { text-align: center; font-size: 1.6rem; color: var(--neon-blue); margin-bottom: 0.5rem;}
         
         .log-container {
-            border: 1px solid var(--neon-green);
-            background: rgba(57, 255, 20, 0.05);
-            padding: 1rem;
-            margin-bottom: 1rem;
-            min-height: 80px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            border: 1px solid var(--neon-green); background: rgba(57, 255, 20, 0.05); padding: 1rem; margin-bottom: 1rem; min-height: 80px; display: flex; flex-direction: column; justify-content: center;
         }
         .log { font-size: 1.3rem; color: var(--neon-green); text-align: center; margin-bottom: 5px; }
         .log-alert { color: var(--neon-pink); font-style: italic; display: block; text-align: center; font-size: 1.2rem;}
 
-        /* Achievements */
-        .achievement { border: 2px solid #ffd700; background: rgba(255, 215, 0, 0.1); color: #ffd700; padding: 1rem; text-align: center; margin-top: 1rem;}
-        .achievement h3 { color: #ffd700; margin-bottom: 0.5rem; font-size: 1.8rem;}
+        /* Game Over Reports */
+        .report-box { border: 1px solid var(--neon-blue); background: rgba(0, 255, 255, 0.05); padding: 1rem; margin-bottom: 1rem;}
+        .memoir-text { font-size: 1.3rem; line-height: 1.4; color: #ccc; text-align: justify;}
+        .tax-line { display: flex; justify-content: space-between; font-size: 1.3rem; margin-bottom: 5px; border-bottom: 1px dotted #444;}
+        .tax-total { color: var(--neon-red); font-weight: bold; }
+        .net-estate { color: var(--neon-green); font-weight: bold; font-size: 1.5rem; margin-top: 10px; border-top: 1px solid var(--neon-green); padding-top: 5px;}
+        
+        /* Leaderboard */
+        .leaderboard { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 1.2rem;}
+        .leaderboard th { color: var(--neon-yellow); border-bottom: 1px solid var(--neon-yellow); padding: 5px; text-align: left; }
+        .leaderboard td { padding: 5px; border-bottom: 1px dashed #444; }
+        .new-record { color: var(--neon-green); font-weight: bold; animation: pulseRed 1s infinite; display: inline-block; margin-left: 10px;}
 
     </style>
 </head>
@@ -209,6 +201,15 @@
             <select id="inp-partner">
                 <option value="single">Single (Standard Costs, 1x Pension)</option>
                 <option value="couple">Couple (1.5x Costs, 2x Pension)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Starting Trait</label>
+            <select id="inp-trait">
+                <option value="none">Standard Retiree (No modifiers)</option>
+                <option value="hedonist">The Hedonist (Cheap luxury, faster HP drain)</option>
+                <option value="healthnut">The Health Nut (Slower HP drain, Joy hates frugality)</option>
+                <option value="paranoid">The Paranoid Saver (Immune to scams, max starting Joy 80%)</option>
             </select>
         </div>
         <div class="form-group">
@@ -265,26 +266,37 @@
             <div class="step-indicator" id="event-step">PHASE 1</div>
             <h2 id="event-title">Title</h2>
             <p class="event-desc" id="event-desc">Description</p>
-            <div id="choices-container">
-                </div>
+            <div id="choices-container"></div>
         </div>
     </div>
 
     <div id="game-over-screen" class="hidden">
         <h1 style="color:var(--neon-red);">SIMULATION TERMINATED</h1>
         <h2 id="end-reason" style="color: var(--neon-red); font-size: 2rem;"></h2>
-        
-        <div id="achievement-box" class="achievement hidden">
-            <h3>ACHIEVEMENT UNLOCKED</h3>
-            <strong id="achieve-title" style="font-size: 1.5rem;"></strong>
-            <p id="achieve-desc" style="font-size: 1.3rem; color: #e0e0e0;"></p>
+        <p style="font-size: 1.6rem; text-align:center; margin-top: 0;">Survival Age: <strong id="end-age" style="color:var(--neon-blue);"></strong></p>
+
+        <div class="report-box">
+            <h4>Terminal Memoir</h4>
+            <div id="memoir-output" class="memoir-text"></div>
         </div>
 
-        <p style="font-size: 1.6rem; text-align:center; margin-top: 1rem;">Survival Age: <strong id="end-age" style="color:var(--neon-blue);"></strong></p>
+        <div class="report-box" id="tax-box">
+            <h4>Estate & Inheritance Tax</h4>
+            <div class="tax-line"><span>Final Gross Estate:</span><span id="tax-gross"></span></div>
+            <div class="tax-line"><span>Tax-Free Threshold:</span><span>£325,000</span></div>
+            <div class="tax-line tax-total"><span>HMRC Deduction (40%):</span><span id="tax-deduction"></span></div>
+            <div class="tax-line net-estate"><span>Net Inheritance Left:</span><span id="tax-net"></span></div>
+        </div>
+
+        <div class="report-box">
+            <h4>Global Leaderboard <span id="new-record-alert" class="new-record hidden">NEW RECORD!</span></h4>
+            <table class="leaderboard">
+                <thead><tr><th>Rank</th><th>Age</th><th>Joy</th><th>Net Estate</th></tr></thead>
+                <tbody id="leaderboard-body"></tbody>
+            </table>
+        </div>
         
-        <div style="border: 1px dashed var(--neon-blue); padding: 1rem; margin-top: 1.5rem;">
-            <h3 style="color:var(--neon-green); font-size: 1.6rem;">TIME TRAVEL HINDSIGHT</h3>
-            <p style="font-size:1.2rem; text-align:center; color: #aaa;">Increase your past contributions to alter your future.</p>
+        <div style="border: 1px dashed var(--neon-blue); padding: 1rem; margin-top: 1rem;">
             <button onclick="restartWithHindsight(12)" style="font-size: 1.2rem; border-color: var(--neon-blue); color: var(--neon-blue);">REBOOT W/ 12% CONTRIBUTION</button>
             <button onclick="restartWithHindsight(15)" style="font-size: 1.2rem; border-color: var(--neon-green); color: var(--neon-green);">REBOOT W/ 15% CONTRIBUTION</button>
             <button onclick="resetToStart()" style="font-size: 1.2rem; border-color: #fff; color: #fff; box-shadow:none;">RETURN TO MAIN MENU</button>
@@ -324,31 +336,32 @@
     let state = {
         age: 0, money: 0, lastMoney: 0, health: 100, happiness: 100,
         turn: 1, inflationMult: 1.0, basePension: 11500,
-        risk: 'med', partner: 'single', baseMilkPrice: 1.50
+        risk: 'med', partner: 'single', trait: 'none', baseMilkPrice: 1.50,
+        history: [] // Stores major choices for the memoir
     };
 
     let activeScenarios = []; 
     const currency = new Intl.NumberFormat('en-GB', { maximumFractionDigits: 0 });
 
+    // Scams marked with isScam flag for Paranoid Saver trait
     const masterScenarios = [
         { title: "The Leaky Roof", desc: "Winter is coming. The roof is leaking.", choices: [ { text: "Premium Roofers", cost: 8000, h: 0, j: 5 }, { text: "Cheap Patch", cost: 2000, h: -5, j: -10 }, { text: "Buckets", cost: 0, h: -20, j: -20 }]},
         { title: "Knee Trouble", desc: "Your knees are failing you.", choices: [ { text: "Private Surgery", cost: 15000, h: 25, j: 10 }, { text: "NHS Waitlist", cost: 0, h: -15, j: -10 }, { text: "Painkillers", cost: 100, h: -30, j: -15 }]},
-        { title: "Crypto Scam", desc: "Your neighbor tells you about a 'guaranteed' new digital coin.", choices: [ { text: "Invest Heavily", cost: 20000, h: -10, j: -40 }, { text: "Just a bit", cost: 2000, h: 0, j: -10 }, { text: "Ignore", cost: 0, h: 0, j: 5 }]},
+        { title: "Crypto Scam", desc: "Neighbor pitches a 'guaranteed' digital coin.", choices: [ { text: "Invest Heavily", cost: 20000, h: -10, j: -40, isScam: true }, { text: "Just a bit", cost: 2000, h: 0, j: -10, isScam: true }, { text: "Ignore", cost: 0, h: 0, j: 5 }]},
         { title: "Midlife Crisis 2.0", desc: "You feel the urge to buy a vintage sports car.", choices: [ { text: "Buy the Porsche", cost: 35000, h: 0, j: 40 }, { text: "Buy a moped", cost: 1500, h: -5, j: 10 }, { text: "Buy a bicycle", cost: 200, h: 10, j: -5 }]},
         { title: "The Grandchild", desc: "Grandchild wants help with a house deposit.", choices: [ { text: "Bank of Gran/Grandad", cost: 25000, h: 0, j: 30 }, { text: "Small token gift", cost: 1000, h: 0, j: 0 }, { text: "Refuse", cost: 0, h: -5, j: -25 }]},
-        { title: "Fountain of Youth", desc: "An illegal, experimental vitality clinic opens locally.", choices: [ { text: "Take the serum", cost: 40000, h: 50, j: 20 }, { text: "Just a Vitamin D drip", cost: 500, h: 5, j: 5 }, { text: "Report them", cost: 0, h: 0, j: -5 }]},
+        { title: "Fountain of Youth", desc: "An illegal vitality clinic opens locally.", choices: [ { text: "Take the serum", cost: 40000, h: 50, j: 20 }, { text: "Just a Vitamin D drip", cost: 500, h: 5, j: 5 }, { text: "Report them", cost: 0, h: 0, j: -5 }]},
         { title: "Bingo Brawl", desc: "A massive fight breaks out at the local Bingo hall.", choices: [ { text: "Join the brawl!", cost: 50, h: -25, j: 35 }, { text: "Flee in a taxi", cost: 20, h: 0, j: -5 }, { text: "Hide under table", cost: 0, h: -5, j: -15 }]},
         { title: "Alpaca Farm", desc: "You have a sudden urge to buy a herd of Alpacas.", choices: [ { text: "Buy the herd", cost: 12000, h: 5, j: 40 }, { text: "Sponsor an Alpaca", cost: 150, h: 0, j: 10 }, { text: "Watch nature docs", cost: 0, h: 0, j: -5 }]},
         { title: "Boiler Breakdown", desc: "It's freezing and the boiler is dead.", choices: [ { text: "Top-tier Heat Pump", cost: 12000, h: 10, j: 5 }, { text: "Standard Replacement", cost: 3000, h: 0, j: 0 }, { text: "Electric Blankets only", cost: 100, h: -25, j: -30 }]},
-        { title: "Teeth Falling Out", desc: "Your gums are receding fast.", choices: [ { text: "Full Titanium Implants", cost: 18000, h: 15, j: 15 }, { text: "NHS Dentures", cost: 300, h: 0, j: -15 }, { text: "Blender Diet", cost: 50, h: -20, j: -30 }]},
         { title: "World Cruise", desc: "Special offer on a 3-month world cruise.", choices: [ { text: "Luxury Suite", cost: 25000, h: 15, j: 50 }, { text: "Windowless Cabin", cost: 8000, h: -5, j: 20 }, { text: "Stay Home", cost: 0, h: 0, j: -15 }]},
-        { title: "Pet Passes Away", desc: "Your loyal dog has gone to the great park in the sky.", choices: [ { text: "Elaborate pet funeral & therapy", cost: 2000, h: 0, j: -10 }, { text: "Standard burial", cost: 200, h: -5, j: -25 }]},
+        { title: "The Scammer", desc: "Someone claiming to be from 'Microsoft' calls.", choices: [ { text: "Follow their instructions", cost: 5000, h: -5, j: -30, isScam: true }, { text: "Argue for an hour", cost: 0, h: 5, j: 10 }, { text: "Hang up", cost: 0, h: 0, j: 0 }]},
         { title: "Flooded Kitchen", desc: "A pipe burst overnight.", choices: [ { text: "Designer Kitchen refit", cost: 12000, h: 0, j: 20 }, { text: "Basic repairs", cost: 1500, h: -5, j: -5 }, { text: "Mop it up and live with rot", cost: 0, h: -20, j: -20 }]},
-        { title: "Cult Invitation", desc: "A charismatic neighbor invites you to join their 'wellness' group.", choices: [ { text: "Donate your savings & join", cost: 30000, h: 20, j: 50 }, { text: "Go for the free snacks", cost: 0, h: 5, j: 5 }, { text: "Call the police", cost: 0, h: 0, j: -5 }]},
-        { title: "Hearing Loss", desc: "The TV keeps getting quieter.", choices: [ { text: "Premium invisible hearing aids", cost: 4000, h: 10, j: 15 }, { text: "NHS standard aids", cost: 0, h: 5, j: -5 }, { text: "Just shout at everyone", cost: 0, h: -10, j: -15 }]},
-        { title: "Cataracts", desc: "Vision is getting extremely blurry.", choices: [ { text: "Private Laser Surgery", cost: 6000, h: 20, j: 20 }, { text: "Wait 18 months for NHS", cost: 0, h: -15, j: -15 }]},
-        { title: "Grown Kids Move Back", desc: "Your 40-year-old child needs to move back in.", choices: [ { text: "Pay their rent elsewhere", cost: 12000, h: 10, j: 20 }, { text: "Let them move in", cost: 3000, h: -20, j: -20 }, { text: "Change the locks", cost: 150, h: -10, j: -10 }]},
-        { title: "Drafty Windows", desc: "The cold wind is blowing right through.", choices: [ { text: "Full Triple Glazing", cost: 10000, h: 10, j: 10 }, { text: "Tape bubble wrap to glass", cost: 15, h: -15, j: -20 }]}
+        { title: "Cult Invitation", desc: "A neighbor invites you to their 'wellness' group.", choices: [ { text: "Donate your savings & join", cost: 30000, h: 20, j: 50, isScam: true }, { text: "Go for the free snacks", cost: 0, h: 5, j: 5 }, { text: "Call the police", cost: 0, h: 0, j: -5 }]},
+        { title: "Gout", desc: "Too much rich food has caused a gout flare-up.", choices: [ { text: "Private Dietitian & Meds", cost: 600, h: 15, j: -5 }, { text: "Suffer in silence", cost: 0, h: -25, j: -20 }]},
+        { title: "Alien Abduction", desc: "You wake up in a field with missing time.", choices: [ { text: "Full body medical scan", cost: 3000, h: 10, j: -10 }, { text: "Write a sci-fi book about it", cost: 0, h: 0, j: 30 }]},
+        { title: "Tax Bill", desc: "HMRC says you underpaid tax 5 years ago.", choices: [ { text: "Pay immediately", cost: 3500, h: -5, j: -10 }, { text: "Hire accountant to fight", cost: 1500, h: -10, j: -5 }]},
+        { title: "Grown Kids Move Back", desc: "Your 40-year-old child needs to move back in.", choices: [ { text: "Pay their rent elsewhere", cost: 12000, h: 10, j: 20 }, { text: "Let them move in", cost: 3000, h: -20, j: -20 }, { text: "Change the locks", cost: 150, h: -10, j: -10 }]}
     ];
 
     // --- TELETYPE LOG ENGINE ---
@@ -358,31 +371,22 @@
         let i = 0;
         function type() {
             if (i < text.length) {
-                el.innerHTML += text.charAt(i);
-                i++;
-                setTimeout(type, speed);
-            } else if (callback) {
-                setTimeout(callback, 200); 
-            }
+                el.innerHTML += text.charAt(i); i++; setTimeout(type, speed);
+            } else if (callback) { setTimeout(callback, 200); }
         }
         type();
     }
 
     function processActionLog(mainText, alertText, sfxType, onComplete) {
-        document.getElementById('interaction-zone').style.display = 'none'; // Lock UI
-        
+        document.getElementById('interaction-zone').style.display = 'none'; 
         typeWriter(mainText, 'ui-log', 15, () => {
             typeWriter(alertText, 'ui-log-alert', 15, () => {
-                
-                if(sfxType === 'damage') sfxDamage();
-                else if(sfxType === 'action') sfxAction();
-                
-                updateUI(); // Update meters
-                
+                if(sfxType === 'damage') sfxDamage(); else if(sfxType === 'action') sfxAction();
+                updateUI(); 
                 setTimeout(() => {
-                    document.getElementById('interaction-zone').style.display = 'block'; // Unlock UI
+                    document.getElementById('interaction-zone').style.display = 'block'; 
                     if (!checkGameOver() && onComplete) onComplete();
-                }, 1200); // Let user read impact before continuing
+                }, 1200); 
             });
         });
     }
@@ -400,10 +404,11 @@
         const contributionRate = contPct / 100;
         
         state.partner = document.getElementById('inp-partner').value;
+        state.trait = document.getElementById('inp-trait').value;
         state.risk = document.getElementById('inp-risk').value;
+        state.history = []; // Reset history
         
-        const salaryGrowth = 1.03;
-        const potGrowth = 1.05;
+        const salaryGrowth = 1.03; const potGrowth = 1.05;
         const yearsToWork = retireAge - currentAge;
 
         for (let i = 0; i < yearsToWork; i++) {
@@ -413,17 +418,14 @@
 
         let startJoy = 100;
         if (contPct > 8) startJoy = 100 - ((contPct - 8) * 4); 
+        if (state.trait === 'paranoid' && startJoy > 80) startJoy = 80;
 
         activeScenarios = [...masterScenarios].sort(() => 0.5 - Math.random());
 
-        state.age = retireAge;
-        state.health = 100;
-        state.happiness = Math.max(10, Math.floor(startJoy)); 
-        state.turn = 1;
-        state.inflationMult = 1.0; 
+        state.age = retireAge; state.health = 100; state.happiness = Math.max(10, Math.floor(startJoy)); 
+        state.turn = 1; state.inflationMult = 1.0; 
         
-        state.money = Math.floor(pot);
-        state.lastMoney = state.money; // initialize trend
+        state.money = Math.floor(pot); state.lastMoney = state.money;
         let logMsg = `Pot reached £${currency.format(pot)}. Joy initialized.`;
 
         if (state.age >= 67) {
@@ -431,8 +433,6 @@
             let initialPension = state.basePension * pensionMult;
             state.money += initialPension;
             logMsg += ` State pension added £${currency.format(initialPension)}.`;
-        } else {
-            logMsg += ` Too young for State Pension.`;
         }
         
         document.getElementById('setup-screen').classList.add('hidden');
@@ -442,9 +442,7 @@
         document.getElementById('ui-log-alert').innerText = "Survive as long as possible.";
 
         updateUI();
-        
-        if (state.age < 75) loadWorkChoice();
-        else loadLifestyleChoice(); 
+        if (state.age < 75) loadWorkChoice(); else loadLifestyleChoice(); 
     }
 
     function getMeterColor(val, type) {
@@ -458,38 +456,39 @@
         document.getElementById('ui-year').innerText = state.turn;
         document.getElementById('ui-money').innerText = currency.format(state.money);
         
-        // Burn Rate Trend
         const trendEl = document.getElementById('ui-trend');
         if (state.money > state.lastMoney) { trendEl.innerHTML = '▲'; trendEl.style.color = 'var(--neon-green)'; }
         else if (state.money < state.lastMoney) { trendEl.innerHTML = '▼'; trendEl.style.color = 'var(--neon-red)'; }
         else { trendEl.innerHTML = '▶'; trendEl.style.color = 'var(--neon-blue)'; }
         state.lastMoney = state.money;
 
-        // Abstract Meters
         const hpBar = document.getElementById('bar-health');
-        hpBar.style.width = state.health + '%';
-        hpBar.style.background = getMeterColor(state.health, 'hp');
+        hpBar.style.width = state.health + '%'; hpBar.style.background = getMeterColor(state.health, 'hp');
 
         const joyBar = document.getElementById('bar-happiness');
-        joyBar.style.width = state.happiness + '%';
-        joyBar.style.background = getMeterColor(state.happiness, 'joy');
+        joyBar.style.width = state.happiness + '%'; joyBar.style.background = getMeterColor(state.happiness, 'joy');
         
-        // Critical Pulse Detection
         const appContainer = document.getElementById('app');
-        if (state.health <= 25 || state.happiness <= 25) {
-            appContainer.classList.add('critical');
-        } else {
-            appContainer.classList.remove('critical');
-        }
+        if (state.health <= 25 || state.happiness <= 25) appContainer.classList.add('critical');
+        else appContainer.classList.remove('critical');
     }
 
-    function applyStats(cost, healthEff, happEff, actionName, onComplete) {
-        state.money -= cost;
-        state.health += healthEff;
-        state.happiness += happEff;
+    function applyStats(cost, healthEff, happEff, actionName, isMajorEvent, onComplete) {
+        // Paranoid Trait Scam Bypass
+        if (state.trait === 'paranoid' && isMajorEvent && isMajorEvent.isScam) {
+            cost = 0; healthEff = 0; happEff = 5; 
+            actionName = `Dodged scam: ${actionName}`;
+        }
+
+        state.money -= cost; state.health += healthEff; state.happiness += happEff;
 
         if (state.health > 100) state.health = 100;
         if (state.happiness > 100) state.happiness = 100;
+
+        // Record history for memoir
+        if (isMajorEvent) {
+            state.history.push(`In Year ${state.turn}, you ${actionName.toLowerCase()}`);
+        }
 
         let hText = healthEff >= 0 ? `+${healthEff} HP` : `${healthEff} HP`;
         let jText = happEff >= 0 ? `+${happEff} JOY` : `${happEff} JOY`;
@@ -502,30 +501,92 @@
         processActionLog(mainLog, alertLog, soundType, onComplete);
     }
 
+    // --- GAME OVER & REPORTS ---
+    function generateMemoir() {
+        let memoir = "Your retirement was short and largely uneventful. ";
+        if (state.history.length > 0) {
+            // Shuffle history and take up to 3 major events
+            let shuffled = state.history.sort(() => 0.5 - Math.random());
+            let highlights = shuffled.slice(0, 3);
+            memoir = "Looking back on your golden years, several moments stand out. " + highlights.join(". ") + ". ";
+        }
+        
+        if (state.happiness >= 80) memoir += "Despite the challenges, you lived a remarkably joyous life.";
+        else if (state.happiness < 30) memoir += "Ultimately, it was a miserable, grinding existence.";
+        else memoir += "It was an average, adequately comfortable end.";
+
+        document.getElementById('memoir-output').innerText = memoir;
+    }
+
+    function calculateTaxes() {
+        if (state.money <= 0) {
+            document.getElementById('tax-box').style.display = 'none';
+            return 0;
+        }
+        document.getElementById('tax-box').style.display = 'block';
+        document.getElementById('tax-gross').innerText = `£${currency.format(state.money)}`;
+        
+        const threshold = 325000;
+        let taxable = Math.max(0, state.money - threshold);
+        let tax = taxable * 0.4;
+        let net = state.money - tax;
+
+        document.getElementById('tax-deduction').innerText = `-£${currency.format(tax)}`;
+        document.getElementById('tax-net').innerText = `£${currency.format(net)}`;
+        return net;
+    }
+
+    function updateLeaderboard(netEstate) {
+        let scores = JSON.parse(localStorage.getItem('goldenYearsScores')) || [];
+        
+        let newScore = {
+            age: state.age,
+            joy: Math.max(0, state.happiness),
+            net: netEstate
+        };
+        
+        scores.push(newScore);
+        // Sort by Age (desc), then Joy (desc)
+        scores.sort((a, b) => b.age - a.age || b.joy - a.joy);
+        scores = scores.slice(0, 5); // Keep top 5
+        
+        localStorage.setItem('goldenYearsScores', JSON.stringify(scores));
+
+        // Check if new score is rank 1
+        if (scores[0].age === newScore.age && scores[0].joy === newScore.joy) {
+            document.getElementById('new-record-alert').classList.remove('hidden');
+        } else {
+            document.getElementById('new-record-alert').classList.add('hidden');
+        }
+
+        const tbody = document.getElementById('leaderboard-body');
+        tbody.innerHTML = '';
+        scores.forEach((s, i) => {
+            let tr = document.createElement('tr');
+            tr.innerHTML = `<td>#${i+1}</td><td>${s.age}</td><td>${s.joy}%</td><td>£${currency.format(s.net)}</td>`;
+            tbody.appendChild(tr);
+        });
+    }
+
     function checkGameOver() {
         let reason = "";
-        let achieveTitle = "";
-        let achieveDesc = "";
-
-        if (state.age >= 100) { reason = "SYSTEM ERROR: USER REFUSES TO TERMINATE"; achieveTitle = "THE CENTENARIAN"; achieveDesc = "You outlived the simulation. The developers are confused."; } 
-        else if (state.money <= 0) { reason = "FUNDS DEPLETED"; if (state.age < 70 && state.happiness >= 90) { achieveTitle = "THE BLAZE OF GLORY"; achieveDesc = "You burned twice as bright and half as long."; } } 
-        else if (state.health <= 0) { reason = "BIOLOGICAL FAILURE"; if (state.money > 100000 && state.happiness < 30) { achieveTitle = "THE SCROOGE"; achieveDesc = "Richest person in the graveyard."; } } 
-        else if (state.happiness <= 0) { reason = "WILL TO LIVE = 0%"; if (state.money > 150000) { achieveTitle = "THE HOARDER"; achieveDesc = "You saved everything but experienced nothing."; } }
+        if (state.age >= 100) reason = "SYSTEM ERROR: USER REFUSES TO TERMINATE";
+        else if (state.money <= 0) reason = "FUNDS DEPLETED";
+        else if (state.health <= 0) reason = "BIOLOGICAL FAILURE";
+        else if (state.happiness <= 0) reason = "WILL TO LIVE = 0%";
 
         if (reason !== "") {
             sfxGameOver();
-            document.getElementById('app').classList.remove('critical'); // Stop pulse
+            document.getElementById('app').classList.remove('critical'); 
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('game-over-screen').classList.remove('hidden');
             document.getElementById('end-reason').innerText = reason;
             document.getElementById('end-age').innerText = state.age;
             
-            if (achieveTitle !== "") {
-                setTimeout(sfxAchievement, 1500);
-                document.getElementById('achievement-box').classList.remove('hidden');
-                document.getElementById('achieve-title').innerText = achieveTitle;
-                document.getElementById('achieve-desc').innerText = achieveDesc;
-            }
+            generateMemoir();
+            let netEstate = calculateTaxes();
+            updateLeaderboard(netEstate);
+
             return true;
         }
         return false;
@@ -536,20 +597,17 @@
         document.getElementById('event-title').innerText = "PART-TIME WORK";
         document.getElementById('event-desc').innerText = "Take a job to boost funds? (HP/JOY Impacts hidden)";
 
-        const container = document.getElementById('choices-container');
-        container.innerHTML = ''; 
+        const container = document.getElementById('choices-container'); container.innerHTML = ''; 
         const workIncome = Math.floor(-12000 * state.inflationMult);
 
-        const btnWork = document.createElement('button');
-        btnWork.className = 'choice-btn';
+        const btnWork = document.createElement('button'); btnWork.className = 'choice-btn';
         btnWork.innerHTML = `<strong>Take the job</strong><div class="choice-effects">INCOME: £${currency.format(Math.abs(workIncome))} | HP/JOY: ???</div>`;
-        btnWork.onclick = () => { applyStats(workIncome, -4, -10, "Part-Time Work", loadLifestyleChoice); };
+        btnWork.onclick = () => { applyStats(workIncome, -4, -10, "Took a part-time job", false, loadLifestyleChoice); };
         container.appendChild(btnWork);
 
-        const btnRest = document.createElement('button');
-        btnRest.className = 'choice-btn';
+        const btnRest = document.createElement('button'); btnRest.className = 'choice-btn';
         btnRest.innerHTML = `<strong>Stay retired</strong><div class="choice-effects">INCOME: £0 | HP/JOY: ???</div>`;
-        btnRest.onclick = () => { applyStats(0, 0, 2, "Full Retirement", loadLifestyleChoice); };
+        btnRest.onclick = () => { applyStats(0, 0, 2, "Stayed fully retired", false, loadLifestyleChoice); };
         container.appendChild(btnRest);
     }
 
@@ -560,24 +618,26 @@
         document.getElementById('event-title').innerText = "LIFESTYLE SELECT";
         document.getElementById('event-desc').innerText = "Choose your burn rate. (HP/JOY impacts hidden)";
 
-        const container = document.getElementById('choices-container');
-        container.innerHTML = ''; 
+        const container = document.getElementById('choices-container'); container.innerHTML = ''; 
 
         let baseFrugal = 14400; let baseComfort = 26400; let baseLux = 45600;
         if (state.partner === 'couple') { baseFrugal *= 1.5; baseComfort *= 1.5; baseLux *= 1.5; }
+        
+        // Trait Modifiers
+        let luxMult = state.trait === 'hedonist' ? 0.9 : 1.0;
+        let frugJoy = state.trait === 'healthnut' ? -30 : -15;
 
         const lifestyles = [
-            { text: "Frugal (Survival)", cost: baseFrugal, h: -10, j: -15 },
+            { text: "Frugal (Survival)", cost: baseFrugal, h: -10, j: frugJoy },
             { text: "Comfortable (Standard)", cost: baseComfort, h: 0, j: 0 },
-            { text: "Luxurious (Premium)", cost: baseLux, h: 8, j: 10 }
+            { text: "Luxurious (Premium)", cost: baseLux * luxMult, h: 8, j: 10 }
         ];
 
         lifestyles.forEach(choice => {
             const inflatedCost = Math.floor(choice.cost * state.inflationMult);
-            const btn = document.createElement('button');
-            btn.className = 'choice-btn';
+            const btn = document.createElement('button'); btn.className = 'choice-btn';
             btn.innerHTML = `<strong>${choice.text}</strong><div class="choice-effects">COST: £${currency.format(inflatedCost)} | HP/JOY: ???</div>`;
-            btn.onclick = () => { applyStats(inflatedCost, choice.h, choice.j, "Lifestyle", loadScenario); };
+            btn.onclick = () => { applyStats(inflatedCost, choice.h, choice.j, "Selected lifestyle", false, loadScenario); };
             container.appendChild(btn);
         });
     }
@@ -587,16 +647,14 @@
         document.getElementById('event-title').innerText = "SOCIAL CARE MANDATE";
         document.getElementById('event-desc').innerText = "Health failure detected. Independent living revoked.";
         
-        const container = document.getElementById('choices-container');
-        container.innerHTML = ''; 
+        const container = document.getElementById('choices-container'); container.innerHTML = ''; 
         let baseCareCost = 50000;
         if (state.partner === 'couple') baseCareCost *= 2;
         const careCost = Math.floor(baseCareCost * state.inflationMult);
 
-        const btn = document.createElement('button');
-        btn.className = 'choice-btn';
+        const btn = document.createElement('button'); btn.className = 'choice-btn';
         btn.innerHTML = `<strong style="color:var(--neon-red);">Accept Mandate & Pay Fees</strong><div class="choice-effects">COST: £${currency.format(careCost)} | HP/JOY: ???</div>`;
-        btn.onclick = () => { applyStats(careCost, 10, -25, "Care Fees", loadScenario); };
+        btn.onclick = () => { applyStats(careCost, 10, -25, "Moved to Care Home", true, loadScenario); };
         container.appendChild(btn);
     }
 
@@ -608,23 +666,20 @@
         document.getElementById('event-title').innerText = scenario.title;
         document.getElementById('event-desc').innerText = scenario.desc;
         
-        const container = document.getElementById('choices-container');
-        container.innerHTML = ''; 
+        const container = document.getElementById('choices-container'); container.innerHTML = ''; 
 
         scenario.choices.forEach(choice => {
             const inflatedCost = Math.floor(choice.cost * state.inflationMult);
-            const btn = document.createElement('button');
-            btn.className = 'choice-btn';
+            const btn = document.createElement('button'); btn.className = 'choice-btn';
             btn.innerHTML = `<strong>${choice.text}</strong><div class="choice-effects">COST: £${currency.format(inflatedCost)} | HP/JOY: ???</div>`;
-            btn.onclick = () => { applyStats(inflatedCost, choice.h, choice.j, choice.text, endOfYearTransition); };
+            // Pass true for isMajorEvent so it goes in the memoir, passing choice object to catch 'isScam' flags
+            btn.onclick = () => { applyStats(inflatedCost, choice.h, choice.j, choice.text, choice, endOfYearTransition); };
             container.appendChild(btn);
         });
     }
 
     function endOfYearTransition() {
-        state.age++;
-        state.turn++;
-        state.inflationMult *= 1.04; 
+        state.age++; state.turn++; state.inflationMult *= 1.04; 
         
         const marketReturn = (Math.random() * ((state.risk==='low'?0.05:(state.risk==='high'?0.25:0.12)) - (state.risk==='low'?0.02:(state.risk==='high'?-0.20:-0.05)))) + (state.risk==='low'?0.02:(state.risk==='high'?-0.20:-0.05));
         const marketGains = Math.floor(state.money * marketReturn);
@@ -639,12 +694,15 @@
             logMsg += ` Pension: +£${currency.format(pensionThisYear)}.`;
         }
         
-        let healthDrain = 3 + Math.floor(Math.max(0, state.age - 65) / 5); 
-        state.health -= healthDrain; 
+        // Trait Modifiers for aging
+        let baseDrain = 3 + Math.floor(Math.max(0, state.age - 65) / 5); 
+        if (state.trait === 'hedonist') baseDrain += 1;
+        if (state.trait === 'healthnut') baseDrain = Math.max(1, baseDrain - 1);
+        
+        state.health -= baseDrain; 
 
-        processActionLog(logMsg, `AGING PENALTY: -${healthDrain} HP`, 'action', () => {
-            if (state.age < 75) loadWorkChoice();
-            else loadLifestyleChoice(); 
+        processActionLog(logMsg, `AGING PENALTY: -${baseDrain} HP`, 'action', () => {
+            if (state.age < 75) loadWorkChoice(); else loadLifestyleChoice(); 
         });
     }
 
