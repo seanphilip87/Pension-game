@@ -109,6 +109,20 @@
             box-shadow: 0 0 20px var(--neon-pink);
         }
 
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--neon-blue);
+            border: 1px dashed var(--neon-blue);
+            font-size: 1.2rem;
+            box-shadow: none;
+            padding: 0.8rem;
+        }
+        .btn-secondary:hover, .btn-secondary:active {
+            background-color: rgba(0, 255, 255, 0.1);
+            color: var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue) inset;
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -186,6 +200,10 @@
         .sponsor-link { display: inline-block; padding: 1rem 2rem; background: var(--neon-green); color: #000; font-size: 1.4rem; text-decoration: none; font-weight: bold; text-transform: uppercase; box-shadow: 0 0 15px var(--neon-green); transition: 0.2s;}
         .sponsor-link:hover { background: #fff; color: #000; box-shadow: 0 0 25px #fff;}
 
+        /* Briefing Style */
+        .briefing-rule { margin-bottom: 1.5rem; font-size: 1.4rem; line-height: 1.3; }
+        .briefing-rule strong { display: block; font-size: 1.6rem; margin-bottom: 5px; }
+
     </style>
 </head>
 <body>
@@ -204,22 +222,6 @@
             <input type="number" id="inp-retire-age" value="67">
         </div>
         <div class="form-group">
-            <label>Relationship Status</label>
-            <select id="inp-partner">
-                <option value="single">Single (Standard Costs, 1x Pension)</option>
-                <option value="couple">Couple (1.5x Costs, 2x Pension)</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Starting Trait</label>
-            <select id="inp-trait">
-                <option value="none">Standard Retiree (No modifiers)</option>
-                <option value="hedonist">The Hedonist (Cheap luxury, faster HP drain)</option>
-                <option value="healthnut">The Health Nut (Slower HP drain, Joy hates frugality)</option>
-                <option value="paranoid">The Paranoid Saver (Immune to scams, max starting Joy 80%)</option>
-            </select>
-        </div>
-        <div class="form-group">
             <label>Current Pension Pot (£)</label>
             <input type="number" id="inp-pot" value="15000">
         </div>
@@ -227,22 +229,62 @@
             <label>Current Salary (£)</label>
             <input type="number" id="inp-salary" value="40000">
         </div>
-        <div class="form-group">
-            <label>Pension Contribution (%)</label>
-            <input type="number" id="inp-contribution" value="8" min="0" max="100">
-            <span class="warning-text">Contributions > 8% will limit starting Joy score.</span>
-        </div>
-        <div class="form-group">
-            <label>Retirement Investment Strategy</label>
-            <select id="inp-risk">
-                <option value="low">Low Risk (Gov Bonds: Steady 2-4% growth)</option>
-                <option value="med" selected>Medium Risk (Index Funds: -5% to +12%)</option>
-                <option value="high">High Risk (Crypto/Stocks: -20% to +25%)</option>
-            </select>
+
+        <button id="toggle-adv-btn" class="btn-secondary" onclick="toggleAdvanced()">[+] ADVANCED SIMULATION SETTINGS</button>
+
+        <div id="advanced-settings" class="hidden" style="margin-top: 1rem; padding: 1rem; border: 1px dashed #444;">
+            <div class="form-group">
+                <label>Relationship Status</label>
+                <select id="inp-partner">
+                    <option value="single">Single (Standard Costs, 1x Pension)</option>
+                    <option value="couple">Couple (1.5x Costs, 2x Pension)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Starting Trait</label>
+                <select id="inp-trait">
+                    <option value="none">Standard Retiree (No modifiers)</option>
+                    <option value="hedonist">The Hedonist (Cheap luxury, faster HP drain)</option>
+                    <option value="healthnut">The Health Nut (Slower HP drain, Joy hates frugality)</option>
+                    <option value="paranoid">The Paranoid Saver (Immune to scams, max starting Joy 80%)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Pension Contribution (%)</label>
+                <input type="number" id="inp-contribution" value="8" min="0" max="100">
+                <span class="warning-text">Contributions > 8% will limit starting Joy score.</span>
+            </div>
+            <div class="form-group">
+                <label>Retirement Investment Strategy</label>
+                <select id="inp-risk">
+                    <option value="low">Low Risk (Gov Bonds: Steady 2-4% growth)</option>
+                    <option value="med" selected>Medium Risk (Index Funds: -5% to +12%)</option>
+                    <option value="high">High Risk (Crypto/Stocks: -20% to +25%)</option>
+                </select>
+            </div>
         </div>
 
-        <button onclick="calculateAndStart()">INITIALIZE SIMULATION</button>
+        <button onclick="prepareSimulation()">INITIALIZE SIMULATION</button>
         <p id="hindsight-msg" style="text-align:center; color: var(--neon-green); font-size: 1.2rem;"></p>
+    </div>
+
+    <div id="tutorial-screen" class="hidden">
+        <h1 style="color: var(--neon-red);">SYSTEM BRIEFING</h1>
+        <div style="border: 1px dashed var(--neon-red); padding: 1.5rem; margin: 1.5rem 0; background: rgba(255,7,58,0.05);">
+            <div class="briefing-rule">
+                <strong style="color: var(--neon-green);">1. YOUR METERS</strong>
+                Keep HP and JOY out of the red. If either hits zero, your simulation terminates.
+            </div>
+            <div class="briefing-rule">
+                <strong style="color: var(--neon-pink);">2. BLIND CHOICES</strong>
+                Life doesn't come with a spreadsheet. The HP and JOY impacts of your choices are entirely hidden. Trust your gut.
+            </div>
+            <div class="briefing-rule">
+                <strong style="color: var(--neon-blue);">3. THE INFLATION MONSTER</strong>
+                Prices rise relentlessly every year. Watch your wealth trajectory indicator [▲/▼]. Do not run out of money.
+            </div>
+        </div>
+        <button onclick="startGame()" style="border-color: var(--neon-green); color: var(--neon-green); text-shadow: 0 0 5px var(--neon-green);">ACKNOWLEDGE & COMMENCE</button>
     </div>
 
     <div id="game-screen" class="hidden">
@@ -267,7 +309,7 @@
         <div class="reality-check" id="ui-reality">REALITY CHECK: 1 Pint of Milk = £1.50</div>
 
         <div class="log-container">
-            <div class="log" id="ui-log">System Initialized.</div>
+            <div class="log" id="ui-log"></div>
             <div class="log-alert" id="ui-log-alert"></div>
         </div>
 
@@ -352,7 +394,7 @@
         age: 0, money: 0, lastMoney: 0, health: 100, happiness: 100,
         turn: 1, inflationMult: 1.0, basePension: 11500,
         risk: 'med', partner: 'single', trait: 'none', 
-        history: [] 
+        history: [], initialLogMsg: ""
     };
 
     let activeScenarios = []; 
@@ -388,7 +430,20 @@
         { title: "Grown Kids Move Back", desc: "Your 40-year-old child needs to move back in.", choices: [ { text: "Pay their rent elsewhere", cost: 12000, h: 10, j: 20, log: "paid rent for your 40-year-old child" }, { text: "Let them move in", cost: 3000, h: -20, j: -20, log: "let your grown child move back in" }, { text: "Change the locks", cost: 150, h: -10, j: -10, log: "changed the locks on your grown child" }]}
     ];
 
-    // --- TELETYPE LOG ENGINE ---
+    // --- UI HELPERS ---
+    function toggleAdvanced() {
+        sfxBlip();
+        const adv = document.getElementById('advanced-settings');
+        const btn = document.getElementById('toggle-adv-btn');
+        if (adv.classList.contains('hidden')) {
+            adv.classList.remove('hidden');
+            btn.innerText = '[-] HIDE ADVANCED SIMULATION SETTINGS';
+        } else {
+            adv.classList.add('hidden');
+            btn.innerText = '[+] ADVANCED SIMULATION SETTINGS';
+        }
+    }
+
     function typeWriter(text, elementId, speed, callback) {
         const el = document.getElementById(elementId);
         el.innerHTML = '';
@@ -415,7 +470,8 @@
         });
     }
 
-    function calculateAndStart() {
+    // --- CORE GAME LOOP ---
+    function prepareSimulation() {
         initAudio();
         sfxAction();
 
@@ -450,19 +506,26 @@
         state.turn = 1; state.inflationMult = 1.0; 
         
         state.money = Math.floor(pot); state.lastMoney = state.money;
-        let logMsg = `Pot reached £${currency.format(pot)}. Joy initialized.`;
+        state.initialLogMsg = `Pot reached £${currency.format(pot)}. Joy initialized.`;
 
         if (state.age >= 67) {
             let pensionMult = state.partner === 'couple' ? 2 : 1;
             let initialPension = state.basePension * pensionMult;
             state.money += initialPension;
-            logMsg += ` State pension added £${currency.format(initialPension)}.`;
+            state.initialLogMsg += ` State pension added £${currency.format(initialPension)}.`;
         }
         
+        // Hide setup, show tutorial briefing
         document.getElementById('setup-screen').classList.add('hidden');
+        document.getElementById('tutorial-screen').classList.remove('hidden');
+    }
+
+    function startGame() {
+        sfxAction();
+        document.getElementById('tutorial-screen').classList.add('hidden');
         document.getElementById('game-screen').classList.remove('hidden');
         
-        document.getElementById('ui-log').innerText = logMsg;
+        document.getElementById('ui-log').innerText = state.initialLogMsg;
         document.getElementById('ui-log-alert').innerText = "Survive as long as possible.";
 
         updateUI();
