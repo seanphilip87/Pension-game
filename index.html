@@ -20,8 +20,8 @@
             font-family: 'VT323', monospace;
             background-color: var(--bg-color);
             background-image: 
-                linear-gradient(rgba(255, 0, 127, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 0, 127, 0.1) 1px, transparent 1px);
+                linear-gradient(rgba(255, 0, 127, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 127, 0.15) 1px, transparent 1px);
             background-size: 20px 20px;
             color: var(--text-main);
             display: flex;
@@ -31,19 +31,43 @@
             margin: 0;
             padding: 10px;
             box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* CRT Scanline & Flicker Effects */
+        body::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            z-index: 100;
+            pointer-events: none;
+        }
+        body::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%);
+            z-index: 101;
+            pointer-events: none;
         }
 
         #app {
-            background: rgba(13, 2, 33, 0.9);
+            background: rgba(13, 2, 33, 0.95);
             padding: 1.5rem;
             border: 2px solid var(--neon-blue);
-            border-radius: 4px;
-            box-shadow: 0 0 15px var(--neon-blue), inset 0 0 10px var(--neon-blue);
+            border-radius: 8px;
+            box-shadow: 0 0 20px var(--neon-blue), inset 0 0 15px var(--neon-blue);
             width: 100%;
             max-width: 600px;
             max-height: 95dvh;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+            position: relative;
+            z-index: 10;
         }
 
         h1, h2, h3 { 
@@ -54,17 +78,16 @@
             letter-spacing: 2px;
             text-transform: uppercase;
         }
-        h1 { font-size: 2.5rem; }
+        h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
         
         .hidden { display: none !important; }
         
-        /* Form Styles */
         .form-group { margin-bottom: 1rem; }
-        label { display: block; font-size: 1.2rem; color: var(--neon-blue); margin-bottom: 0.3rem; }
-        input { 
+        label { display: block; font-size: 1.2rem; color: var(--neon-blue); margin-bottom: 0.3rem; text-shadow: 0 0 3px var(--neon-blue);}
+        input, select { 
             width: 100%; 
             padding: 0.5rem; 
-            background: transparent;
+            background: rgba(0, 255, 255, 0.05);
             border: 1px solid var(--neon-blue); 
             color: var(--neon-green);
             border-radius: 0; 
@@ -73,12 +96,13 @@
             font-size: 16px; 
             -webkit-appearance: none;
         }
-        input:focus { outline: none; box-shadow: 0 0 8px var(--neon-blue); }
+        select option { background: var(--bg-color); color: var(--neon-green); }
+        input:focus, select:focus { outline: none; box-shadow: 0 0 8px var(--neon-blue); background: rgba(0, 255, 255, 0.1);}
 
         button {
             width: 100%;
             padding: 1rem;
-            background-color: transparent;
+            background-color: rgba(255, 0, 170, 0.1);
             color: var(--neon-pink);
             border: 2px solid var(--neon-pink);
             font-family: 'VT323', monospace;
@@ -89,18 +113,20 @@
             margin-top: 10px;
             -webkit-appearance: none;
             touch-action: manipulation;
+            text-shadow: 0 0 4px var(--neon-pink);
+            box-shadow: 0 0 5px var(--neon-pink) inset;
         }
         button:hover, button:active { 
             background-color: var(--neon-pink); 
             color: var(--bg-color);
-            box-shadow: 0 0 15px var(--neon-pink);
+            box-shadow: 0 0 20px var(--neon-pink);
+            text-shadow: none;
         }
 
-        /* Game UI */
         .stats {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             padding: 0.5rem;
             border-bottom: 1px dashed var(--neon-blue);
             font-size: 1.3rem;
@@ -109,51 +135,66 @@
         .stat-health { color: var(--neon-red); text-shadow: 0 0 4px var(--neon-red);}
         .stat-happiness { color: var(--neon-pink); text-shadow: 0 0 4px var(--neon-pink);}
         
+        .reality-check {
+            text-align: center;
+            font-size: 1rem;
+            color: #888;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
         .event-card {
             border: 1px solid var(--neon-pink);
             padding: 1rem;
             background: rgba(255, 0, 170, 0.05);
             margin-bottom: 1rem;
+            box-shadow: 0 0 10px rgba(255,0,170,0.2) inset;
         }
-        .step-indicator {
-            font-size: 1rem;
-            color: var(--neon-blue);
-            margin-bottom: 0.5rem;
-            text-align: center;
-        }
-        .event-desc {
-            font-size: 1.3rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
+        .step-indicator { font-size: 1.2rem; color: var(--neon-blue); margin-bottom: 0.5rem; text-align: center; text-shadow: 0 0 3px var(--neon-blue);}
+        .event-desc { font-size: 1.3rem; margin-bottom: 1.5rem; text-align: center; }
         
         .choice-btn {
             display: block;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0,0,0,0.6);
             color: var(--text-main);
             border: 1px solid var(--neon-blue);
             text-align: left;
             margin-bottom: 0.8rem;
             padding: 0.8rem;
             font-size: 1.2rem;
+            box-shadow: none;
+            text-shadow: none;
         }
         .choice-btn strong { display: block; margin-bottom: 5px; color: var(--neon-blue); }
-        .choice-btn:hover, .choice-btn:active { background-color: var(--neon-blue); color: #000; box-shadow: 0 0 10px var(--neon-blue);}
+        .choice-btn:hover, .choice-btn:active { background-color: var(--neon-blue); color: #000; box-shadow: 0 0 15px var(--neon-blue);}
         .choice-btn:hover strong { color: #000; }
         .choice-effects { font-size: 1.1rem; color: var(--neon-green); }
         
-        .turn-info { text-align: center; font-size: 1.5rem; color: var(--neon-blue); margin-bottom: 0.5rem;}
+        .turn-info { text-align: center; font-size: 1.5rem; color: var(--neon-blue); margin-bottom: 0.5rem; text-shadow: 0 0 4px var(--neon-blue);}
         
-        /* The Outcome Log */
         .log-container {
             border: 1px solid var(--neon-green);
-            background: rgba(57, 255, 20, 0.1);
+            background: rgba(57, 255, 20, 0.05);
             padding: 0.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             min-height: 40px;
+            box-shadow: 0 0 5px var(--neon-green) inset;
         }
-        .log { font-size: 1.2rem; color: var(--neon-green); text-align: center; }
-        .log-alert { color: var(--neon-pink); font-style: italic; display: block; margin-top: 5px;}
+        .log { font-size: 1.2rem; color: var(--neon-green); text-align: center; text-shadow: 0 0 3px var(--neon-green);}
+        .log-alert { color: var(--neon-pink); font-style: italic; display: block; margin-top: 5px; text-shadow: 0 0 3px var(--neon-pink);}
+
+        /* Achievements */
+        .achievement {
+            border: 2px solid #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+            color: #ffd700;
+            padding: 1rem;
+            text-align: center;
+            margin-top: 1rem;
+            text-shadow: 0 0 5px #ffd700;
+            box-shadow: 0 0 10px #ffd700 inset;
+        }
+        .achievement h3 { color: #ffd700; text-shadow: 0 0 10px #ffd700; margin-bottom: 0.5rem; font-size: 1.8rem;}
 
     </style>
 </head>
@@ -162,7 +203,7 @@
 <div id="app">
     <div id="setup-screen">
         <h1>Golden Years: 2084</h1>
-        <p style="text-align:center; font-size:1.2rem;">System Booting... Enter temporal coordinates and financial parameters.</p>
+        <p style="text-align:center; font-size:1.2rem; color: var(--neon-blue);">System Booting... Enter financial parameters.</p>
         
         <div class="form-group">
             <label>Current Age</label>
@@ -179,6 +220,14 @@
         <div class="form-group">
             <label>Current Salary (£)</label>
             <input type="number" id="inp-salary" value="40000">
+        </div>
+        <div class="form-group">
+            <label>Retirement Investment Strategy</label>
+            <select id="inp-risk">
+                <option value="low">Low Risk (Gov Bonds: Steady 2-4% growth)</option>
+                <option value="med" selected>Medium Risk (Index Funds: -5% to +12%)</option>
+                <option value="high">High Risk (Crypto/Stocks: -20% to +25%)</option>
+            </select>
         </div>
         
         <input type="hidden" id="inp-contribution" value="0.08"> 
@@ -198,6 +247,8 @@
             <div class="stat-happiness">JOY:<span id="ui-happiness"></span></div>
         </div>
 
+        <div class="reality-check" id="ui-reality">REALITY CHECK: 1 Pint of Milk = £1.50</div>
+
         <div class="log-container">
             <div class="log" id="ui-log">System Initialized.</div>
             <div class="log-alert" id="ui-log-alert"></div>
@@ -213,38 +264,68 @@
     </div>
 
     <div id="game-over-screen" class="hidden">
-        <h1>SIMULATION TERMINATED</h1>
+        <h1 style="color:var(--neon-red); text-shadow: 0 0 10px var(--neon-red);">SIMULATION TERMINATED</h1>
         <h2 id="end-reason" style="color: var(--neon-red); font-size: 2rem;"></h2>
-        <p style="font-size: 1.5rem; text-align:center;">Survival Age: <strong id="end-age" style="color:var(--neon-blue);"></strong></p>
+        
+        <div id="achievement-box" class="achievement hidden">
+            <h3>ACHIEVEMENT UNLOCKED</h3>
+            <strong id="achieve-title" style="font-size: 1.5rem;"></strong>
+            <p id="achieve-desc" style="font-size: 1.2rem; color: #e0e0e0; text-shadow:none;"></p>
+        </div>
+
+        <p style="font-size: 1.5rem; text-align:center; margin-top: 1rem;">Survival Age: <strong id="end-age" style="color:var(--neon-blue);"></strong></p>
         <p style="font-size: 1.5rem; text-align:center;">Final Joy Score: <strong id="end-happiness" style="color:var(--neon-pink);"></strong></p>
         
-        <div style="border: 1px dashed var(--neon-blue); padding: 1rem; margin-top: 2rem;">
-            <h3 style="color:var(--neon-green);">TIME TRAVEL HINDSIGHT</h3>
-            <p style="font-size:1.2rem; text-align:center;">Increase your past contributions to alter your future.</p>
+        <div style="border: 1px dashed var(--neon-blue); padding: 1rem; margin-top: 1.5rem;">
+            <h3 style="color:var(--neon-green); font-size: 1.5rem;">TIME TRAVEL HINDSIGHT</h3>
+            <p style="font-size:1.1rem; text-align:center; color: #aaa;">Increase your past contributions to alter your future.</p>
             <button onclick="restartWithHindsight(0.12)" style="font-size: 1.1rem; border-color: var(--neon-blue); color: var(--neon-blue);">REBOOT W/ 12% CONTRIBUTION</button>
             <button onclick="restartWithHindsight(0.15)" style="font-size: 1.1rem; border-color: var(--neon-green); color: var(--neon-green);">REBOOT W/ 15% CONTRIBUTION</button>
-            <button onclick="resetToStart()" style="font-size: 1.1rem; border-color: #fff; color: #fff;">RETURN TO MAIN MENU</button>
+            <button onclick="resetToStart()" style="font-size: 1.1rem; border-color: #fff; color: #fff; box-shadow:none;">RETURN TO MAIN MENU</button>
         </div>
     </div>
 </div>
 
 <script>
-    // Game State
+    // --- AUDIO ENGINE (Web Audio API Synthesizer) ---
+    let audioCtx;
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+    
+    function playTone(freq, type, duration, vol=0.1) {
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    }
+    
+    function sfxBlip() { playTone(600, 'square', 0.1, 0.05); }
+    function sfxAction() { playTone(400, 'square', 0.1, 0.05); setTimeout(()=>playTone(600, 'square', 0.15, 0.05), 100); }
+    function sfxDamage() { playTone(150, 'sawtooth', 0.4, 0.1); }
+    function sfxGameOver() { playTone(100, 'sawtooth', 1.0, 0.2); setTimeout(()=>playTone(80, 'sawtooth', 1.5, 0.2), 500); }
+    function sfxAchievement() { playTone(523.25, 'square', 0.2, 0.1); setTimeout(()=>playTone(659.25, 'square', 0.2, 0.1), 200); setTimeout(()=>playTone(783.99, 'square', 0.4, 0.1), 400); }
+
+    // --- GAME STATE & SCENARIOS ---
     let state = {
-        age: 0,
-        money: 0,
-        health: 100,
-        happiness: 100,
-        turn: 1,
-        inflationMult: 1.0,
-        basePension: 11500
+        age: 0, money: 0, health: 100, happiness: 100,
+        turn: 1, inflationMult: 1.0, basePension: 11500,
+        risk: 'med', baseMilkPrice: 1.50
     };
 
-    let activeScenarios = []; // Will hold the shuffled deck of events
-
+    let activeScenarios = []; 
     const currency = new Intl.NumberFormat('en-GB', { maximumFractionDigits: 0 });
 
-    // 50 Highly Varied Events (Humorous, Disproportionate, Mundane)
     const masterScenarios = [
         { title: "The Leaky Roof", desc: "Winter is coming. The roof is leaking.", choices: [ { text: "Premium Roofers", cost: 8000, h: 0, j: 5 }, { text: "Cheap Patch", cost: 2000, h: -5, j: -10 }, { text: "Buckets", cost: 0, h: -20, j: -20 }]},
         { title: "Knee Trouble", desc: "Your knees are failing you.", choices: [ { text: "Private Surgery", cost: 15000, h: 25, j: 10 }, { text: "NHS Waitlist", cost: 0, h: -15, j: -10 }, { text: "Painkillers", cost: 100, h: -30, j: -15 }]},
@@ -289,11 +370,15 @@
     ];
 
     function calculateAndStart() {
+        initAudio();
+        sfxAction();
+
         const currentAge = parseInt(document.getElementById('inp-age').value);
         const retireAge = parseInt(document.getElementById('inp-retire-age').value);
         let pot = parseFloat(document.getElementById('inp-pot').value);
         let salary = parseFloat(document.getElementById('inp-salary').value);
         const contributionRate = parseFloat(document.getElementById('inp-contribution').value);
+        state.risk = document.getElementById('inp-risk').value;
         
         const salaryGrowth = 1.03;
         const potGrowth = 1.05;
@@ -304,7 +389,6 @@
             salary = salary * salaryGrowth;
         }
 
-        // Shuffle the scenarios deck
         activeScenarios = [...masterScenarios].sort(() => 0.5 - Math.random());
 
         state.age = retireAge;
@@ -330,9 +414,11 @@
         document.getElementById('ui-money').innerText = currency.format(state.money);
         document.getElementById('ui-health').innerText = state.health;
         document.getElementById('ui-happiness').innerText = state.happiness;
+        
+        const currentMilk = (state.baseMilkPrice * state.inflationMult).toFixed(2);
+        document.getElementById('ui-reality').innerText = `REALITY CHECK: 1 Pint of Milk = £${currentMilk}`;
     }
 
-    // New apply stats function that records the hidden consequences
     function applyStats(cost, healthEff, happEff, actionName) {
         state.money -= cost;
         state.health += healthEff;
@@ -341,35 +427,75 @@
         if (state.health > 100) state.health = 100;
         if (state.happiness > 100) state.happiness = 100;
 
-        // Build the consequence log
         let hText = healthEff >= 0 ? `+${healthEff} HP` : `${healthEff} HP`;
         let jText = happEff >= 0 ? `+${happEff} JOY` : `${happEff} JOY`;
         
         document.getElementById('ui-log').innerText = `Paid £${currency.format(cost)} for ${actionName}.`;
         document.getElementById('ui-log-alert').innerText = `IMPACT: ${hText} | ${jText}`;
 
+        if(healthEff < 0 || happEff < -10) sfxDamage();
+        else sfxAction();
+
         updateUI();
     }
 
     function checkGameOver() {
         let reason = "";
-        if (state.money <= 0) reason = "FUNDS DEPLETED";
-        else if (state.health <= 0) reason = "BIOLOGICAL FAILURE";
-        else if (state.happiness <= 0) reason = "WILL TO LIVE = 0%";
+        let achieveTitle = "";
+        let achieveDesc = "";
+
+        if (state.age >= 100) {
+            reason = "SYSTEM ERROR: USER REFUSES TO TERMINATE";
+            achieveTitle = "THE CENTENARIAN";
+            achieveDesc = "You outlived the simulation. The developers are confused.";
+        } else if (state.money <= 0) {
+            reason = "FUNDS DEPLETED";
+            if (state.age < 70 && state.happiness >= 90) {
+                achieveTitle = "THE BLAZE OF GLORY";
+                achieveDesc = "You burned twice as bright and half as long. Worth it.";
+            }
+        } else if (state.health <= 0) {
+            reason = "BIOLOGICAL FAILURE";
+            if (state.money > 100000 && state.happiness < 20) {
+                achieveTitle = "THE SCROOGE";
+                achieveDesc = "Richest person in the graveyard. Nobody came to the funeral.";
+            }
+        } else if (state.happiness <= 0) {
+            reason = "WILL TO LIVE = 0%";
+            if (state.money > 150000) {
+                achieveTitle = "THE HOARDER";
+                achieveDesc = "You saved everything but experienced nothing.";
+            }
+        }
 
         if (reason !== "") {
+            sfxGameOver();
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('game-over-screen').classList.remove('hidden');
             document.getElementById('end-reason').innerText = reason;
             document.getElementById('end-age').innerText = state.age;
             document.getElementById('end-happiness').innerText = state.happiness > 0 ? state.happiness : 0;
+            
+            if (achieveTitle !== "") {
+                setTimeout(sfxAchievement, 1500);
+                document.getElementById('achievement-box').classList.remove('hidden');
+                document.getElementById('achieve-title').innerText = achieveTitle;
+                document.getElementById('achieve-desc').innerText = achieveDesc;
+            } else {
+                document.getElementById('achievement-box').classList.add('hidden');
+            }
             return true;
         }
         return false;
     }
 
-    // STEP 1: Choose baseline living costs
     function loadLifestyleChoice() {
+        // LATE GAME BOSS CHECK: Social Care
+        if (state.age >= 80 && state.health < 30) {
+            triggerCareHomeBoss();
+            return;
+        }
+
         document.getElementById('event-step').innerText = "PHASE 1: COST OF LIVING";
         document.getElementById('event-title').innerText = "LIFESTYLE SELECT";
         document.getElementById('event-desc').innerText = "Choose your burn rate. Health & Joy impacts are hidden.";
@@ -389,28 +515,43 @@
             btn.className = 'choice-btn';
             btn.innerHTML = `
                 <strong>${choice.text}</strong>
-                <div class="choice-effects">
-                    COST: £${currency.format(inflatedCost)} | HP/JOY: ???
-                </div>
+                <div class="choice-effects">COST: £${currency.format(inflatedCost)} | HP/JOY: ???</div>
             `;
             btn.onclick = () => {
                 applyStats(inflatedCost, choice.h, choice.j, "Lifestyle");
-                if (!checkGameOver()) {
-                    loadScenario(); 
-                }
+                if (!checkGameOver()) loadScenario(); 
             };
             container.appendChild(btn);
         });
     }
 
-    // STEP 2: Handle the random unexpected event
+    function triggerCareHomeBoss() {
+        document.getElementById('event-step').innerText = "CRITICAL ALERT";
+        document.getElementById('event-title').innerText = "SOCIAL CARE MANDATE";
+        document.getElementById('event-desc').innerText = "Your health has failed. Independent lifestyle is no longer possible. You have been moved to a residential care facility.";
+        
+        sfxDamage();
+        const container = document.getElementById('choices-container');
+        container.innerHTML = ''; 
+        
+        const careCost = Math.floor(50000 * state.inflationMult);
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.innerHTML = `
+            <strong style="color:var(--neon-red);">Accept Mandate & Pay Fees</strong>
+            <div class="choice-effects">COST: £${currency.format(careCost)} | HP: +10 | JOY: -20</div>
+        `;
+        btn.onclick = () => {
+            applyStats(careCost, 10, -20, "Mandatory Care Fees");
+            if (!checkGameOver()) loadScenario();
+        };
+        container.appendChild(btn);
+    }
+
     function loadScenario() {
         document.getElementById('event-step').innerText = "PHASE 2: ANOMALY DETECTED";
         
-        // Pull a unique event from the shuffled deck. If empty, reshuffle.
-        if (activeScenarios.length === 0) {
-            activeScenarios = [...masterScenarios].sort(() => 0.5 - Math.random());
-        }
+        if (activeScenarios.length === 0) activeScenarios = [...masterScenarios].sort(() => 0.5 - Math.random());
         const scenario = activeScenarios.pop();
         
         document.getElementById('event-title').innerText = scenario.title;
@@ -425,49 +566,61 @@
             btn.className = 'choice-btn';
             btn.innerHTML = `
                 <strong>${choice.text}</strong>
-                <div class="choice-effects">
-                    COST: £${currency.format(inflatedCost)} | HP/JOY: ???
-                </div>
+                <div class="choice-effects">COST: £${currency.format(inflatedCost)} | HP/JOY: ???</div>
             `;
             btn.onclick = () => {
                 applyStats(inflatedCost, choice.h, choice.j, choice.text);
-                if (!checkGameOver()) {
-                    endOfYearTransition(); 
-                }
+                if (!checkGameOver()) endOfYearTransition(); 
             };
             container.appendChild(btn);
         });
     }
 
+    function calculateMarketReturn() {
+        let min, max;
+        if (state.risk === 'low') { min = 0.02; max = 0.05; }
+        else if (state.risk === 'high') { min = -0.20; max = 0.25; }
+        else { min = -0.05; max = 0.12; } // Medium
+        
+        return (Math.random() * (max - min)) + min;
+    }
+
     function endOfYearTransition() {
         state.age++;
         state.turn++;
+        state.inflationMult *= 1.03; // 3% inflation
         
-        // 3% annual inflation
-        state.inflationMult *= 1.03; 
-        
+        // Market Volatility applied to remaining pot
+        const marketReturn = calculateMarketReturn();
+        const marketGains = Math.floor(state.money * marketReturn);
+        state.money += marketGains;
+
+        // Add Pension
         const pensionThisYear = Math.floor(state.basePension * state.inflationMult);
         state.money += pensionThisYear;
-        state.health -= 4; // Harsh reality of aging
+        
+        state.health -= 4; // Aging penalty
 
-        document.getElementById('ui-log').innerText = `YEAR ${state.turn-1} SURVIVED. Pension added £${currency.format(pensionThisYear)}.`;
+        let marketText = marketGains >= 0 ? `+£${currency.format(marketGains)}` : `-£${currency.format(Math.abs(marketGains))}`;
+        document.getElementById('ui-log').innerText = `YEAR ${state.turn-1} END. Market Return: ${marketText}. Pension: +£${currency.format(pensionThisYear)}.`;
         document.getElementById('ui-log-alert').innerText = "AGING PENALTY: -4 HP";
 
         updateUI();
         if(!checkGameOver()) {
-            setTimeout(loadLifestyleChoice, 1500); // Small pause to read the log before next phase
+            setTimeout(() => { sfxBlip(); loadLifestyleChoice(); }, 2500); 
         }
     }
 
     function restartWithHindsight(newRate) {
+        sfxBlip();
         document.getElementById('inp-contribution').value = newRate;
         document.getElementById('hindsight-msg').innerText = `TIMELINE ALTERED: CONTRIBUTION AT ${newRate * 100}%`;
-        
         document.getElementById('game-over-screen').classList.add('hidden');
         document.getElementById('setup-screen').classList.remove('hidden');
     }
 
     function resetToStart() {
+        sfxBlip();
         document.getElementById('inp-contribution').value = 0.08;
         document.getElementById('hindsight-msg').innerText = "";
         document.getElementById('game-over-screen').classList.add('hidden');
