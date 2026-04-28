@@ -12,6 +12,7 @@
             --neon-pink: #ff00aa;
             --neon-green: #39ff14;
             --neon-red: #ff073a;
+            --neon-yellow: #ffd700;
             --text-main: #e0e0e0;
         }
         
@@ -32,6 +33,12 @@
             box-sizing: border-box;
         }
 
+        @keyframes pulseRed {
+            0% { box-shadow: 0 0 20px var(--neon-blue), inset 0 0 15px var(--neon-blue); border-color: var(--neon-blue); }
+            50% { box-shadow: 0 0 40px var(--neon-red), inset 0 0 30px var(--neon-red); border-color: var(--neon-red); }
+            100% { box-shadow: 0 0 20px var(--neon-blue), inset 0 0 15px var(--neon-blue); border-color: var(--neon-blue); }
+        }
+
         #app {
             background: rgba(13, 2, 33, 0.95);
             padding: 1.5rem;
@@ -43,6 +50,11 @@
             max-height: 95dvh;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+            transition: all 0.5s ease;
+        }
+
+        #app.critical {
+            animation: pulseRed 1s infinite;
         }
 
         h1, h2, h3 { 
@@ -74,7 +86,7 @@
         select option { background: var(--bg-color); color: var(--neon-green); }
         input:focus, select:focus { outline: none; box-shadow: 0 0 8px var(--neon-blue); background: rgba(0, 255, 255, 0.1);}
         
-        .warning-text { font-size: 1rem; color: var(--neon-pink); display: block; margin-top: 4px; }
+        .warning-text { font-size: 1.1rem; color: var(--neon-pink); display: block; margin-top: 4px; }
 
         button {
             width: 100%;
@@ -98,25 +110,38 @@
             box-shadow: 0 0 20px var(--neon-pink);
         }
 
-        .stats {
-            display: flex;
-            justify-content: space-between;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
             margin-bottom: 0.5rem;
-            padding: 0.5rem;
+            padding: 1rem;
             border-bottom: 1px dashed var(--neon-blue);
-            font-size: 1.4rem;
+            background: rgba(0,0,0,0.5);
         }
-        .stat-money { color: var(--neon-green); }
-        .stat-health { color: var(--neon-red); }
-        .stat-happiness { color: var(--neon-pink); }
         
-        .reality-check {
-            text-align: center;
-            font-size: 1.1rem;
-            color: #aaa;
-            margin-bottom: 1rem;
-            letter-spacing: 1px;
+        .stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 1.4rem; }
+        .stat-money { color: var(--neon-green); font-size: 1.6rem; display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: 5px;}
+        .trend-icon { margin-left: 10px; font-size: 1.2rem; }
+        
+        .stat-label { width: 40px; color: var(--neon-blue); }
+        
+        /* Battery Meters */
+        .meter-container {
+            flex-grow: 1;
+            height: 18px;
+            background: #111;
+            border: 1px solid #444;
+            margin-left: 10px;
+            position: relative;
         }
+        .meter-fill {
+            height: 100%;
+            width: 100%;
+            transition: width 0.8s ease-in-out, background-color 0.5s ease;
+        }
+
+        .reality-check { text-align: center; font-size: 1.1rem; color: #aaa; margin: 1rem 0; letter-spacing: 1px;}
 
         .event-card {
             border: 1px solid var(--neon-pink);
@@ -141,29 +166,25 @@
         .choice-btn strong { display: block; margin-bottom: 5px; color: var(--neon-blue); }
         .choice-btn:hover, .choice-btn:active { background-color: var(--neon-blue); color: #000;}
         .choice-btn:hover strong { color: #000; }
-        .choice-effects { font-size: 1.1rem; color: var(--neon-green); }
+        .choice-effects { font-size: 1.1rem; color: #888; }
         
         .turn-info { text-align: center; font-size: 1.6rem; color: var(--neon-blue); margin-bottom: 0.5rem;}
         
         .log-container {
             border: 1px solid var(--neon-green);
             background: rgba(57, 255, 20, 0.05);
-            padding: 0.5rem;
-            margin-bottom: 0.5rem;
-            min-height: 40px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
-        .log { font-size: 1.3rem; color: var(--neon-green); text-align: center; }
-        .log-alert { color: var(--neon-pink); font-style: italic; display: block; margin-top: 5px; text-align: center;}
+        .log { font-size: 1.3rem; color: var(--neon-green); text-align: center; margin-bottom: 5px; }
+        .log-alert { color: var(--neon-pink); font-style: italic; display: block; text-align: center; font-size: 1.2rem;}
 
         /* Achievements */
-        .achievement {
-            border: 2px solid #ffd700;
-            background: rgba(255, 215, 0, 0.1);
-            color: #ffd700;
-            padding: 1rem;
-            text-align: center;
-            margin-top: 1rem;
-        }
+        .achievement { border: 2px solid #ffd700; background: rgba(255, 215, 0, 0.1); color: #ffd700; padding: 1rem; text-align: center; margin-top: 1rem;}
         .achievement h3 { color: #ffd700; margin-bottom: 0.5rem; font-size: 1.8rem;}
 
     </style>
@@ -201,7 +222,7 @@
         <div class="form-group">
             <label>Pension Contribution (%)</label>
             <input type="number" id="inp-contribution" value="8" min="0" max="100">
-            <span class="warning-text">Warning: Contributions over 8% will lower your starting Joy score (Sacrificing your youth!)</span>
+            <span class="warning-text">Contributions > 8% will limit starting Joy score.</span>
         </div>
         <div class="form-group">
             <label>Retirement Investment Strategy</label>
@@ -221,20 +242,26 @@
             AGE: <span id="ui-age"></span> | YEAR: <span id="ui-year">1</span>
         </div>
         
-        <div class="stats">
-            <div class="stat-money">£<span id="ui-money"></span></div>
-            <div class="stat-health">HP:<span id="ui-health"></span></div>
-            <div class="stat-happiness">JOY:<span id="ui-happiness"></span></div>
+        <div class="stats-grid">
+            <div class="stat-money">
+                £<span id="ui-money"></span> <span id="ui-trend" class="trend-icon">▶</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">HP</span>
+                <div class="meter-container"><div id="bar-health" class="meter-fill" style="background:var(--neon-green);"></div></div>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">JOY</span>
+                <div class="meter-container"><div id="bar-happiness" class="meter-fill" style="background:var(--neon-pink);"></div></div>
+            </div>
         </div>
-
-        <div class="reality-check" id="ui-reality">REALITY CHECK: 1 Pint of Milk = £1.50</div>
 
         <div class="log-container">
             <div class="log" id="ui-log">System Initialized.</div>
             <div class="log-alert" id="ui-log-alert"></div>
         </div>
 
-        <div class="event-card">
+        <div class="event-card" id="interaction-zone">
             <div class="step-indicator" id="event-step">PHASE 1</div>
             <h2 id="event-title">Title</h2>
             <p class="event-desc" id="event-desc">Description</p>
@@ -254,7 +281,6 @@
         </div>
 
         <p style="font-size: 1.6rem; text-align:center; margin-top: 1rem;">Survival Age: <strong id="end-age" style="color:var(--neon-blue);"></strong></p>
-        <p style="font-size: 1.6rem; text-align:center;">Final Joy Score: <strong id="end-happiness" style="color:var(--neon-pink);"></strong></p>
         
         <div style="border: 1px dashed var(--neon-blue); padding: 1rem; margin-top: 1.5rem;">
             <h3 style="color:var(--neon-green); font-size: 1.6rem;">TIME TRAVEL HINDSIGHT</h3>
@@ -270,9 +296,7 @@
     // --- AUDIO ENGINE ---
     let audioCtx;
     function initAudio() {
-        if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if (audioCtx.state === 'suspended') audioCtx.resume();
     }
     
@@ -296,9 +320,9 @@
     function sfxGameOver() { playTone(100, 'sawtooth', 1.0, 0.2); setTimeout(()=>playTone(80, 'sawtooth', 1.5, 0.2), 500); }
     function sfxAchievement() { playTone(523.25, 'square', 0.2, 0.1); setTimeout(()=>playTone(659.25, 'square', 0.2, 0.1), 200); setTimeout(()=>playTone(783.99, 'square', 0.4, 0.1), 400); }
 
-    // --- GAME STATE & SCENARIOS ---
+    // --- GAME STATE ---
     let state = {
-        age: 0, money: 0, health: 100, happiness: 100,
+        age: 0, money: 0, lastMoney: 0, health: 100, happiness: 100,
         turn: 1, inflationMult: 1.0, basePension: 11500,
         risk: 'med', partner: 'single', baseMilkPrice: 1.50
     };
@@ -318,25 +342,50 @@
         { title: "Boiler Breakdown", desc: "It's freezing and the boiler is dead.", choices: [ { text: "Top-tier Heat Pump", cost: 12000, h: 10, j: 5 }, { text: "Standard Replacement", cost: 3000, h: 0, j: 0 }, { text: "Electric Blankets only", cost: 100, h: -25, j: -30 }]},
         { title: "Teeth Falling Out", desc: "Your gums are receding fast.", choices: [ { text: "Full Titanium Implants", cost: 18000, h: 15, j: 15 }, { text: "NHS Dentures", cost: 300, h: 0, j: -15 }, { text: "Blender Diet", cost: 50, h: -20, j: -30 }]},
         { title: "World Cruise", desc: "Special offer on a 3-month world cruise.", choices: [ { text: "Luxury Suite", cost: 25000, h: 15, j: 50 }, { text: "Windowless Cabin", cost: 8000, h: -5, j: 20 }, { text: "Stay Home", cost: 0, h: 0, j: -15 }]},
-        { title: "The Scammer", desc: "Someone claiming to be from 'Microsoft' calls your landline.", choices: [ { text: "Follow their instructions", cost: 5000, h: -5, j: -30 }, { text: "Argue for an hour", cost: 0, h: 5, j: 10 }, { text: "Hang up", cost: 0, h: 0, j: 0 }]},
         { title: "Pet Passes Away", desc: "Your loyal dog has gone to the great park in the sky.", choices: [ { text: "Elaborate pet funeral & therapy", cost: 2000, h: 0, j: -10 }, { text: "Standard burial", cost: 200, h: -5, j: -25 }]},
-        { title: "New Puppy", desc: "You are lonely. Do you get a puppy?", choices: [ { text: "Pedigree Golden Retriever", cost: 2500, h: 10, j: 40 }, { text: "Rescue Dog", cost: 200, h: 5, j: 30 }, { text: "No, too much work", cost: 0, h: 0, j: -15 }]},
-        { title: "Gardening Accident", desc: "You threw your back out lifting compost.", choices: [ { text: "Private Physiotherapist", cost: 1000, h: 10, j: 0 }, { text: "Bed rest for a month", cost: 0, h: -15, j: -20 }]},
         { title: "Flooded Kitchen", desc: "A pipe burst overnight.", choices: [ { text: "Designer Kitchen refit", cost: 12000, h: 0, j: 20 }, { text: "Basic repairs", cost: 1500, h: -5, j: -5 }, { text: "Mop it up and live with rot", cost: 0, h: -20, j: -20 }]},
         { title: "Cult Invitation", desc: "A charismatic neighbor invites you to join their 'wellness' group.", choices: [ { text: "Donate your savings & join", cost: 30000, h: 20, j: 50 }, { text: "Go for the free snacks", cost: 0, h: 5, j: 5 }, { text: "Call the police", cost: 0, h: 0, j: -5 }]},
         { title: "Hearing Loss", desc: "The TV keeps getting quieter.", choices: [ { text: "Premium invisible hearing aids", cost: 4000, h: 10, j: 15 }, { text: "NHS standard aids", cost: 0, h: 5, j: -5 }, { text: "Just shout at everyone", cost: 0, h: -10, j: -15 }]},
         { title: "Cataracts", desc: "Vision is getting extremely blurry.", choices: [ { text: "Private Laser Surgery", cost: 6000, h: 20, j: 20 }, { text: "Wait 18 months for NHS", cost: 0, h: -15, j: -15 }]},
-        { title: "Long Lost Relative", desc: "A 'cousin' asks for a loan.", choices: [ { text: "Give them the money", cost: 5000, h: 0, j: -20 }, { text: "Tell them to get lost", cost: 0, h: 0, j: 5 }]},
-        { title: "Gout", desc: "Too much rich food has caused a gout flare-up.", choices: [ { text: "Private Dietitian & Meds", cost: 600, h: 15, j: -5 }, { text: "Suffer in silence", cost: 0, h: -25, j: -20 }]},
-        { title: "Neighbour Dispute", desc: "Neighbour's tree is blocking your light.", choices: [ { text: "Hire Lawyers", cost: 5000, h: -10, j: -10 }, { text: "Chop it down illegally at night", cost: 100, h: 5, j: 30 }, { text: "Do nothing", cost: 0, h: -5, j: -15 }]},
-        { title: "Sciatica", desc: "Shooting pains down your leg.", choices: [ { text: "Acupuncture & Massage plan", cost: 1200, h: 15, j: 5 }, { text: "Lie on the floor for a month", cost: 0, h: -15, j: -25 }]},
-        { title: "Alien Abduction", desc: "You wake up in a field with missing time.", choices: [ { text: "Full body medical scan", cost: 3000, h: 10, j: -10 }, { text: "Write a sci-fi book about it", cost: 0, h: 0, j: 30 }]},
-        { title: "Food Poisoning", desc: "That prawn cocktail was off.", choices: [ { text: "Private hospital drip", cost: 1500, h: 5, j: 0 }, { text: "Ride it out on the toilet", cost: 0, h: -25, j: -15 }]},
-        { title: "Tax Bill", desc: "HMRC says you underpaid tax 5 years ago.", choices: [ { text: "Pay immediately", cost: 3500, h: -5, j: -10 }, { text: "Hire accountant to fight", cost: 1500, h: -10, j: -5 }]},
-        { title: "Anniversary", desc: "It's a big anniversary.", choices: [ { text: "Diamond jewelry & Paris", cost: 8000, h: 0, j: 40 }, { text: "Card from the petrol station", cost: 5, h: -10, j: -40 }]},
         { title: "Grown Kids Move Back", desc: "Your 40-year-old child needs to move back in.", choices: [ { text: "Pay their rent elsewhere", cost: 12000, h: 10, j: 20 }, { text: "Let them move in", cost: 3000, h: -20, j: -20 }, { text: "Change the locks", cost: 150, h: -10, j: -10 }]},
         { title: "Drafty Windows", desc: "The cold wind is blowing right through.", choices: [ { text: "Full Triple Glazing", cost: 10000, h: 10, j: 10 }, { text: "Tape bubble wrap to glass", cost: 15, h: -15, j: -20 }]}
     ];
+
+    // --- TELETYPE LOG ENGINE ---
+    function typeWriter(text, elementId, speed, callback) {
+        const el = document.getElementById(elementId);
+        el.innerHTML = '';
+        let i = 0;
+        function type() {
+            if (i < text.length) {
+                el.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(type, speed);
+            } else if (callback) {
+                setTimeout(callback, 200); 
+            }
+        }
+        type();
+    }
+
+    function processActionLog(mainText, alertText, sfxType, onComplete) {
+        document.getElementById('interaction-zone').style.display = 'none'; // Lock UI
+        
+        typeWriter(mainText, 'ui-log', 15, () => {
+            typeWriter(alertText, 'ui-log-alert', 15, () => {
+                
+                if(sfxType === 'damage') sfxDamage();
+                else if(sfxType === 'action') sfxAction();
+                
+                updateUI(); // Update meters
+                
+                setTimeout(() => {
+                    document.getElementById('interaction-zone').style.display = 'block'; // Unlock UI
+                    if (!checkGameOver() && onComplete) onComplete();
+                }, 1200); // Let user read impact before continuing
+            });
+        });
+    }
 
     function calculateAndStart() {
         initAudio();
@@ -362,11 +411,8 @@
             salary = salary * salaryGrowth;
         }
 
-        // Calculate starting joy penalty for high savers
         let startJoy = 100;
-        if (contPct > 8) {
-            startJoy = 100 - ((contPct - 8) * 4); // -4 Joy per extra percent over 8%
-        }
+        if (contPct > 8) startJoy = 100 - ((contPct - 8) * 4); 
 
         activeScenarios = [...masterScenarios].sort(() => 0.5 - Math.random());
 
@@ -376,9 +422,9 @@
         state.turn = 1;
         state.inflationMult = 1.0; 
         
-        // No pension on day 1 unless they retire at 67+
         state.money = Math.floor(pot);
-        let logMsg = `Pot reached £${currency.format(pot)}. Joy initialized at ${state.happiness}%.`;
+        state.lastMoney = state.money; // initialize trend
+        let logMsg = `Pot reached £${currency.format(pot)}. Joy initialized.`;
 
         if (state.age >= 67) {
             let pensionMult = state.partner === 'couple' ? 2 : 1;
@@ -386,7 +432,7 @@
             state.money += initialPension;
             logMsg += ` State pension added £${currency.format(initialPension)}.`;
         } else {
-            logMsg += ` Too young for State Pension!`;
+            logMsg += ` Too young for State Pension.`;
         }
         
         document.getElementById('setup-screen').classList.add('hidden');
@@ -401,18 +447,43 @@
         else loadLifestyleChoice(); 
     }
 
+    function getMeterColor(val, type) {
+        if (val > 50) return type === 'hp' ? 'var(--neon-green)' : 'var(--neon-pink)';
+        if (val > 25) return 'var(--neon-yellow)';
+        return 'var(--neon-red)';
+    }
+
     function updateUI() {
         document.getElementById('ui-age').innerText = state.age;
         document.getElementById('ui-year').innerText = state.turn;
         document.getElementById('ui-money').innerText = currency.format(state.money);
-        document.getElementById('ui-health').innerText = state.health;
-        document.getElementById('ui-happiness').innerText = state.happiness;
         
-        const currentMilk = (state.baseMilkPrice * state.inflationMult).toFixed(2);
-        document.getElementById('ui-reality').innerText = `REALITY CHECK: 1 Pint of Milk = £${currentMilk}`;
+        // Burn Rate Trend
+        const trendEl = document.getElementById('ui-trend');
+        if (state.money > state.lastMoney) { trendEl.innerHTML = '▲'; trendEl.style.color = 'var(--neon-green)'; }
+        else if (state.money < state.lastMoney) { trendEl.innerHTML = '▼'; trendEl.style.color = 'var(--neon-red)'; }
+        else { trendEl.innerHTML = '▶'; trendEl.style.color = 'var(--neon-blue)'; }
+        state.lastMoney = state.money;
+
+        // Abstract Meters
+        const hpBar = document.getElementById('bar-health');
+        hpBar.style.width = state.health + '%';
+        hpBar.style.background = getMeterColor(state.health, 'hp');
+
+        const joyBar = document.getElementById('bar-happiness');
+        joyBar.style.width = state.happiness + '%';
+        joyBar.style.background = getMeterColor(state.happiness, 'joy');
+        
+        // Critical Pulse Detection
+        const appContainer = document.getElementById('app');
+        if (state.health <= 25 || state.happiness <= 25) {
+            appContainer.classList.add('critical');
+        } else {
+            appContainer.classList.remove('critical');
+        }
     }
 
-    function applyStats(cost, healthEff, happEff, actionName) {
+    function applyStats(cost, healthEff, happEff, actionName, onComplete) {
         state.money -= cost;
         state.health += healthEff;
         state.happiness += happEff;
@@ -424,13 +495,11 @@
         let jText = happEff >= 0 ? `+${happEff} JOY` : `${happEff} JOY`;
         let costText = cost >= 0 ? `-£${currency.format(cost)}` : `+£${currency.format(Math.abs(cost))}`;
         
-        document.getElementById('ui-log').innerText = `Action: ${actionName} (${costText}).`;
-        document.getElementById('ui-log-alert').innerText = `IMPACT: ${hText} | ${jText}`;
+        let mainLog = `ACTION: ${actionName} (${costText})`;
+        let alertLog = `IMPACT: ${hText} | ${jText}`;
+        let soundType = (healthEff < 0 || happEff <= -10) ? 'damage' : 'action';
 
-        if(healthEff < 0 || happEff <= -10) sfxDamage();
-        else sfxAction();
-
-        updateUI();
+        processActionLog(mainLog, alertLog, soundType, onComplete);
     }
 
     function checkGameOver() {
@@ -438,101 +507,67 @@
         let achieveTitle = "";
         let achieveDesc = "";
 
-        if (state.age >= 100) {
-            reason = "SYSTEM ERROR: USER REFUSES TO TERMINATE";
-            achieveTitle = "THE CENTENARIAN";
-            achieveDesc = "You outlived the simulation. The developers are confused.";
-        } else if (state.money <= 0) {
-            reason = "FUNDS DEPLETED";
-            if (state.age < 70 && state.happiness >= 90) {
-                achieveTitle = "THE BLAZE OF GLORY";
-                achieveDesc = "You burned twice as bright and half as long. Worth it.";
-            }
-        } else if (state.health <= 0) {
-            reason = "BIOLOGICAL FAILURE";
-            if (state.money > 100000 && state.happiness < 30) {
-                achieveTitle = "THE SCROOGE";
-                achieveDesc = "Richest person in the graveyard. Nobody came to the funeral.";
-            }
-        } else if (state.happiness <= 0) {
-            reason = "WILL TO LIVE = 0%";
-            if (state.money > 150000) {
-                achieveTitle = "THE HOARDER";
-                achieveDesc = "You saved everything but experienced nothing.";
-            }
-        }
+        if (state.age >= 100) { reason = "SYSTEM ERROR: USER REFUSES TO TERMINATE"; achieveTitle = "THE CENTENARIAN"; achieveDesc = "You outlived the simulation. The developers are confused."; } 
+        else if (state.money <= 0) { reason = "FUNDS DEPLETED"; if (state.age < 70 && state.happiness >= 90) { achieveTitle = "THE BLAZE OF GLORY"; achieveDesc = "You burned twice as bright and half as long."; } } 
+        else if (state.health <= 0) { reason = "BIOLOGICAL FAILURE"; if (state.money > 100000 && state.happiness < 30) { achieveTitle = "THE SCROOGE"; achieveDesc = "Richest person in the graveyard."; } } 
+        else if (state.happiness <= 0) { reason = "WILL TO LIVE = 0%"; if (state.money > 150000) { achieveTitle = "THE HOARDER"; achieveDesc = "You saved everything but experienced nothing."; } }
 
         if (reason !== "") {
             sfxGameOver();
+            document.getElementById('app').classList.remove('critical'); // Stop pulse
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('game-over-screen').classList.remove('hidden');
             document.getElementById('end-reason').innerText = reason;
             document.getElementById('end-age').innerText = state.age;
-            document.getElementById('end-happiness').innerText = state.happiness > 0 ? state.happiness : 0;
             
             if (achieveTitle !== "") {
                 setTimeout(sfxAchievement, 1500);
                 document.getElementById('achievement-box').classList.remove('hidden');
                 document.getElementById('achieve-title').innerText = achieveTitle;
                 document.getElementById('achieve-desc').innerText = achieveDesc;
-            } else {
-                document.getElementById('achievement-box').classList.add('hidden');
             }
             return true;
         }
         return false;
     }
 
-    // PHASE 0: Un-retirement
     function loadWorkChoice() {
         document.getElementById('event-step').innerText = "PHASE 0: UN-RETIREMENT";
-        document.getElementById('event-title').innerText = "PART-TIME OPPORTUNITY";
-        document.getElementById('event-desc').innerText = "You are still relatively young. Do you want to take a part-time job to boost your funds?";
+        document.getElementById('event-title').innerText = "PART-TIME WORK";
+        document.getElementById('event-desc').innerText = "Take a job to boost funds? (HP/JOY Impacts hidden)";
 
         const container = document.getElementById('choices-container');
         container.innerHTML = ''; 
-        
-        const workIncome = Math.floor(-12000 * state.inflationMult); // Negative cost = income
+        const workIncome = Math.floor(-12000 * state.inflationMult);
 
         const btnWork = document.createElement('button');
         btnWork.className = 'choice-btn';
-        btnWork.innerHTML = `<strong>Take the job</strong><div class="choice-effects">INCOME: £${currency.format(Math.abs(workIncome))} | HP: -4 | JOY: -10</div>`;
-        btnWork.onclick = () => { applyStats(workIncome, -4, -10, "Part-Time Work"); if (!checkGameOver()) loadLifestyleChoice(); };
+        btnWork.innerHTML = `<strong>Take the job</strong><div class="choice-effects">INCOME: £${currency.format(Math.abs(workIncome))} | HP/JOY: ???</div>`;
+        btnWork.onclick = () => { applyStats(workIncome, -4, -10, "Part-Time Work", loadLifestyleChoice); };
         container.appendChild(btnWork);
 
         const btnRest = document.createElement('button');
         btnRest.className = 'choice-btn';
-        btnRest.innerHTML = `<strong>Stay fully retired</strong><div class="choice-effects">INCOME: £0 | HP: 0 | JOY: +2</div>`;
-        btnRest.onclick = () => { applyStats(0, 0, 2, "Full Retirement"); if (!checkGameOver()) loadLifestyleChoice(); };
+        btnRest.innerHTML = `<strong>Stay retired</strong><div class="choice-effects">INCOME: £0 | HP/JOY: ???</div>`;
+        btnRest.onclick = () => { applyStats(0, 0, 2, "Full Retirement", loadLifestyleChoice); };
         container.appendChild(btnRest);
     }
 
-    // PHASE 1: Lifestyle
     function loadLifestyleChoice() {
-        if (state.age >= 80 && state.health < 30) {
-            triggerCareHomeBoss();
-            return;
-        }
+        if (state.age >= 80 && state.health < 30) { triggerCareHomeBoss(); return; }
 
         document.getElementById('event-step').innerText = "PHASE 1: COST OF LIVING";
         document.getElementById('event-title').innerText = "LIFESTYLE SELECT";
-        document.getElementById('event-desc').innerText = "Choose your burn rate. Health & Joy impacts are hidden.";
+        document.getElementById('event-desc').innerText = "Choose your burn rate. (HP/JOY impacts hidden)";
 
         const container = document.getElementById('choices-container');
         container.innerHTML = ''; 
 
-        // Base costs spiked by 20%
-        let baseFrugal = 14400;
-        let baseComfort = 26400;
-        let baseLux = 45600;
-
-        // Couple multiplier
-        if (state.partner === 'couple') {
-            baseFrugal *= 1.5; baseComfort *= 1.5; baseLux *= 1.5;
-        }
+        let baseFrugal = 14400; let baseComfort = 26400; let baseLux = 45600;
+        if (state.partner === 'couple') { baseFrugal *= 1.5; baseComfort *= 1.5; baseLux *= 1.5; }
 
         const lifestyles = [
-            { text: "Frugal (Survival Mode)", cost: baseFrugal, h: -10, j: -15 },
+            { text: "Frugal (Survival)", cost: baseFrugal, h: -10, j: -15 },
             { text: "Comfortable (Standard)", cost: baseComfort, h: 0, j: 0 },
             { text: "Luxurious (Premium)", cost: baseLux, h: 8, j: 10 }
         ];
@@ -541,14 +576,8 @@
             const inflatedCost = Math.floor(choice.cost * state.inflationMult);
             const btn = document.createElement('button');
             btn.className = 'choice-btn';
-            btn.innerHTML = `
-                <strong>${choice.text}</strong>
-                <div class="choice-effects">COST: £${currency.format(inflatedCost)} | HP/JOY: ???</div>
-            `;
-            btn.onclick = () => {
-                applyStats(inflatedCost, choice.h, choice.j, "Lifestyle");
-                if (!checkGameOver()) loadScenario(); 
-            };
+            btn.innerHTML = `<strong>${choice.text}</strong><div class="choice-effects">COST: £${currency.format(inflatedCost)} | HP/JOY: ???</div>`;
+            btn.onclick = () => { applyStats(inflatedCost, choice.h, choice.j, "Lifestyle", loadScenario); };
             container.appendChild(btn);
         });
     }
@@ -556,33 +585,23 @@
     function triggerCareHomeBoss() {
         document.getElementById('event-step').innerText = "CRITICAL ALERT";
         document.getElementById('event-title').innerText = "SOCIAL CARE MANDATE";
-        document.getElementById('event-desc').innerText = "Your health has failed. Independent lifestyle is no longer possible. You have been moved to a residential care facility.";
+        document.getElementById('event-desc').innerText = "Health failure detected. Independent living revoked.";
         
-        sfxDamage();
         const container = document.getElementById('choices-container');
         container.innerHTML = ''; 
-        
         let baseCareCost = 50000;
         if (state.partner === 'couple') baseCareCost *= 2;
-
         const careCost = Math.floor(baseCareCost * state.inflationMult);
+
         const btn = document.createElement('button');
         btn.className = 'choice-btn';
-        btn.innerHTML = `
-            <strong style="color:var(--neon-red);">Accept Mandate & Pay Fees</strong>
-            <div class="choice-effects">COST: £${currency.format(careCost)} | HP: +10 | JOY: -25</div>
-        `;
-        btn.onclick = () => {
-            applyStats(careCost, 10, -25, "Mandatory Care Fees");
-            if (!checkGameOver()) loadScenario();
-        };
+        btn.innerHTML = `<strong style="color:var(--neon-red);">Accept Mandate & Pay Fees</strong><div class="choice-effects">COST: £${currency.format(careCost)} | HP/JOY: ???</div>`;
+        btn.onclick = () => { applyStats(careCost, 10, -25, "Care Fees", loadScenario); };
         container.appendChild(btn);
     }
 
-    // PHASE 2: Unexpected Event
     function loadScenario() {
         document.getElementById('event-step').innerText = "PHASE 2: ANOMALY DETECTED";
-        
         if (activeScenarios.length === 0) activeScenarios = [...masterScenarios].sort(() => 0.5 - Math.random());
         const scenario = activeScenarios.pop();
         
@@ -596,63 +615,37 @@
             const inflatedCost = Math.floor(choice.cost * state.inflationMult);
             const btn = document.createElement('button');
             btn.className = 'choice-btn';
-            btn.innerHTML = `
-                <strong>${choice.text}</strong>
-                <div class="choice-effects">COST: £${currency.format(inflatedCost)} | HP/JOY: ???</div>
-            `;
-            btn.onclick = () => {
-                applyStats(inflatedCost, choice.h, choice.j, choice.text);
-                if (!checkGameOver()) endOfYearTransition(); 
-            };
+            btn.innerHTML = `<strong>${choice.text}</strong><div class="choice-effects">COST: £${currency.format(inflatedCost)} | HP/JOY: ???</div>`;
+            btn.onclick = () => { applyStats(inflatedCost, choice.h, choice.j, choice.text, endOfYearTransition); };
             container.appendChild(btn);
         });
-    }
-
-    function calculateMarketReturn() {
-        let min, max;
-        if (state.risk === 'low') { min = 0.02; max = 0.05; }
-        else if (state.risk === 'high') { min = -0.20; max = 0.25; }
-        else { min = -0.05; max = 0.12; } 
-        return (Math.random() * (max - min)) + min;
     }
 
     function endOfYearTransition() {
         state.age++;
         state.turn++;
-        state.inflationMult *= 1.04; // Increased difficulty: 4% inflation
+        state.inflationMult *= 1.04; 
         
-        const marketReturn = calculateMarketReturn();
+        const marketReturn = (Math.random() * ((state.risk==='low'?0.05:(state.risk==='high'?0.25:0.12)) - (state.risk==='low'?0.02:(state.risk==='high'?-0.20:-0.05)))) + (state.risk==='low'?0.02:(state.risk==='high'?-0.20:-0.05));
         const marketGains = Math.floor(state.money * marketReturn);
         state.money += marketGains;
 
         let marketText = marketGains >= 0 ? `+£${currency.format(marketGains)}` : `-£${currency.format(Math.abs(marketGains))}`;
         let logMsg = `YEAR ${state.turn-1} END. Market: ${marketText}.`;
 
-        // Check State Pension Age (67+)
         if (state.age >= 67) {
-            let pensionMult = state.partner === 'couple' ? 2 : 1;
-            let pensionThisYear = Math.floor((state.basePension * pensionMult) * state.inflationMult);
+            let pensionThisYear = Math.floor((state.basePension * (state.partner==='couple'?2:1)) * state.inflationMult);
             state.money += pensionThisYear;
             logMsg += ` Pension: +£${currency.format(pensionThisYear)}.`;
-        } else {
-            logMsg += ` (Too young for State Pension).`;
         }
         
-        // Progressive Health Drain: Gets worse as you age
         let healthDrain = 3 + Math.floor(Math.max(0, state.age - 65) / 5); 
         state.health -= healthDrain; 
 
-        document.getElementById('ui-log').innerText = logMsg;
-        document.getElementById('ui-log-alert').innerText = `AGING PENALTY: -${healthDrain} HP`;
-
-        updateUI();
-        if(!checkGameOver()) {
-            setTimeout(() => { 
-                sfxBlip(); 
-                if (state.age < 75) loadWorkChoice();
-                else loadLifestyleChoice(); 
-            }, 3000); 
-        }
+        processActionLog(logMsg, `AGING PENALTY: -${healthDrain} HP`, 'action', () => {
+            if (state.age < 75) loadWorkChoice();
+            else loadLifestyleChoice(); 
+        });
     }
 
     function restartWithHindsight(newRate) {
