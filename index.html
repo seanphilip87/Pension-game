@@ -7,21 +7,22 @@
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0d0221;
-            --neon-blue: #0ff;
-            --neon-pink: #ff00aa;
-            --neon-green: #39ff14;
-            --neon-red: #ff073a;
-            --neon-yellow: #ffd700;
-            --text-main: #e0e0e0;
+            /* Softened Neons to reduce halation/eye strain */
+            --bg-color: #0b021a;
+            --neon-blue: #4deeea; 
+            --neon-pink: #ff47b6; 
+            --neon-green: #5cff3b; 
+            --neon-red: #ff3355;
+            --neon-yellow: #ffdf33;
+            --text-main: #e8e8e8;
         }
         
         body {
             font-family: 'VT323', monospace;
             background-color: var(--bg-color);
             background-image: 
-                linear-gradient(rgba(255, 0, 127, 0.15) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 0, 127, 0.15) 1px, transparent 1px);
+                linear-gradient(rgba(255, 71, 182, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 71, 182, 0.1) 1px, transparent 1px);
             background-size: 20px 20px;
             color: var(--text-main);
             display: flex;
@@ -29,334 +30,328 @@
             align-items: center;
             min-height: 100dvh; 
             margin: 0;
-            padding: 10px;
+            padding: 5px;
             box-sizing: border-box;
         }
 
         @keyframes pulseRed {
             0% { box-shadow: 0 0 20px var(--neon-blue), inset 0 0 15px var(--neon-blue); border-color: var(--neon-blue); }
-            50% { box-shadow: 0 0 40px var(--neon-red), inset 0 0 30px var(--neon-red); border-color: var(--neon-red); }
+            50% { box-shadow: 0 0 30px var(--neon-red), inset 0 0 20px var(--neon-red); border-color: var(--neon-red); }
             100% { box-shadow: 0 0 20px var(--neon-blue), inset 0 0 15px var(--neon-blue); border-color: var(--neon-blue); }
         }
 
         #app {
-            background: rgba(13, 2, 33, 0.95);
-            padding: 1.5rem;
+            background: rgba(11, 2, 26, 0.98);
+            padding: 0; /* Handled internally for sticky headers */
             border: 2px solid var(--neon-blue);
             border-radius: 8px;
-            box-shadow: 0 0 20px var(--neon-blue), inset 0 0 15px var(--neon-blue);
+            box-shadow: 0 0 15px var(--neon-blue), inset 0 0 10px var(--neon-blue);
             width: 100%;
-            max-width: 600px;
-            max-height: 95dvh;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+            max-width: 550px;
+            height: 96dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
             transition: all 0.5s ease;
         }
 
         #app.critical { animation: pulseRed 1s infinite; }
+        
+        .scrollable-content {
+            padding: 1.5rem;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            flex-grow: 1;
+        }
 
         h1, h2, h3, h4 { 
             text-align: center; 
             margin-top: 0; 
             color: var(--neon-pink);
-            text-shadow: 0 0 5px var(--neon-pink);
+            text-shadow: 0 0 4px var(--neon-pink);
             letter-spacing: 2px;
             text-transform: uppercase;
         }
         h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
-        h4 { color: var(--neon-blue); text-shadow: 0 0 5px var(--neon-blue); font-size: 1.5rem; margin-bottom: 0.5rem;}
+        h4 { color: var(--neon-blue); text-shadow: 0 0 4px var(--neon-blue); font-size: 1.6rem; margin-bottom: 0.5rem;}
         
         .hidden { display: none !important; }
         
         .form-group { margin-bottom: 1rem; }
-        label { display: block; font-size: 1.3rem; color: var(--neon-blue); margin-bottom: 0.3rem;}
+        label { display: block; font-size: 1.4rem; color: var(--neon-blue); margin-bottom: 0.2rem; font-weight: bold;}
+        .formatted-val { font-size: 1.2rem; color: var(--neon-green); display: block; margin-top: 2px; min-height: 1.2rem;}
+        
         input, select { 
             width: 100%; 
-            padding: 0.6rem; 
-            background: rgba(0, 255, 255, 0.05);
+            padding: 0.8rem; 
+            background: rgba(77, 238, 234, 0.05);
             border: 1px solid var(--neon-blue); 
-            color: var(--neon-green);
+            color: var(--text-main);
             border-radius: 0; 
             box-sizing: border-box;
             font-family: 'VT323', monospace;
             font-size: 18px; 
             -webkit-appearance: none;
         }
-        select option { background: var(--bg-color); color: var(--neon-green); }
-        input:focus, select:focus { outline: none; box-shadow: 0 0 8px var(--neon-blue); background: rgba(0, 255, 255, 0.1);}
+        select option { background: var(--bg-color); color: var(--text-main); }
+        input:focus, select:focus { outline: none; box-shadow: 0 0 8px var(--neon-blue); background: rgba(77, 238, 234, 0.1);}
         
-        .warning-text { font-size: 1.1rem; color: var(--neon-pink); display: block; margin-top: 4px; }
+        .warning-text { font-size: 1.2rem; color: var(--neon-pink); display: block; margin-top: 4px; }
 
         button {
             width: 100%;
             padding: 1rem;
-            background-color: rgba(255, 0, 170, 0.1);
+            background-color: rgba(255, 71, 182, 0.1);
             color: var(--neon-pink);
             border: 2px solid var(--neon-pink);
             font-family: 'VT323', monospace;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
+            font-weight: bold;
             text-transform: uppercase;
             cursor: pointer;
             transition: all 0.2s ease-in-out;
             margin-top: 10px;
             -webkit-appearance: none;
             touch-action: manipulation;
-            box-shadow: 0 0 5px var(--neon-pink) inset;
         }
-        button:hover, button:active { 
-            background-color: var(--neon-pink); 
-            color: var(--bg-color);
-            box-shadow: 0 0 20px var(--neon-pink);
-        }
+        button:hover, button:active { background-color: var(--neon-pink); color: var(--bg-color); box-shadow: 0 0 15px var(--neon-pink); }
 
-        .btn-secondary {
-            background-color: transparent;
-            color: var(--neon-blue);
-            border: 1px dashed var(--neon-blue);
-            font-size: 1.2rem;
-            box-shadow: none;
-            padding: 0.8rem;
-        }
-        .btn-secondary:hover, .btn-secondary:active {
-            background-color: rgba(0, 255, 255, 0.1);
-            color: var(--neon-blue);
-            box-shadow: 0 0 10px var(--neon-blue) inset;
-        }
+        .btn-secondary { background-color: transparent; color: var(--neon-blue); border: 1px dashed var(--neon-blue); font-size: 1.3rem; padding: 0.8rem; }
+        .btn-secondary:hover { background-color: rgba(77, 238, 234, 0.1); color: var(--neon-blue); box-shadow: 0 0 10px var(--neon-blue) inset; }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-            margin-bottom: 0.5rem;
-            padding: 1rem;
-            border-bottom: 1px dashed var(--neon-blue);
-            background: rgba(0,0,0,0.5);
+        /* Sticky Stats Grid */
+        .stats-wrapper {
+            position: sticky;
+            top: 0;
+            background: rgba(11, 2, 26, 0.98);
+            border-bottom: 2px dashed var(--neon-blue);
+            padding: 1rem 1.5rem 0.5rem 1.5rem;
+            z-index: 100;
         }
+        .turn-info { text-align: center; font-size: 1.8rem; color: var(--neon-blue); margin-bottom: 0.5rem; font-weight: bold;}
+        .stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 1.6rem; margin-bottom: 5px;}
+        .stat-money { color: var(--neon-green); font-size: 1.8rem; display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: 5px; font-weight: bold;}
+        .trend-icon { margin-left: 10px; font-size: 1.4rem; }
+        .stat-label { width: 45px; color: var(--neon-blue); font-weight: bold;}
         
-        .stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 1.4rem; }
-        .stat-money { color: var(--neon-green); font-size: 1.6rem; display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: 5px;}
-        .trend-icon { margin-left: 10px; font-size: 1.2rem; }
-        
-        .stat-label { width: 40px; color: var(--neon-blue); }
-        
-        /* Battery Meters */
+        /* Meters with Tick Marks */
         .meter-container {
             flex-grow: 1;
-            height: 18px;
-            background: #111;
-            border: 1px solid #444;
+            height: 20px;
+            background: linear-gradient(90deg, #111 24.5%, #444 25%, #111 25.5%, #111 49.5%, #444 50%, #111 50.5%, #111 74.5%, #444 75%, #111 75.5%);
+            border: 1px solid #555;
             margin-left: 10px;
             position: relative;
         }
-        .meter-fill { height: 100%; width: 100%; transition: width 0.8s ease-in-out, background-color 0.5s ease; }
+        .meter-fill { height: 100%; width: 100%; transition: width 0.6s ease-in-out, background-color 0.5s ease; opacity: 0.9;}
 
-        .reality-check { text-align: center; font-size: 1.2rem; color: var(--neon-yellow); margin: 1rem 0; letter-spacing: 1px; font-style: italic;}
+        .control-panel { display: flex; gap: 10px; margin-top: 10px;}
+        .control-btn { padding: 0.5rem; font-size: 1.2rem; border: 1px solid var(--neon-yellow); color: var(--neon-yellow); background: transparent; margin: 0;}
+        .control-btn:hover { background: var(--neon-yellow); color: #000; box-shadow: 0 0 10px var(--neon-yellow);}
 
-        .event-card { border: 1px solid var(--neon-pink); padding: 1rem; background: rgba(255, 0, 170, 0.05); margin-bottom: 1rem; }
-        .step-indicator { font-size: 1.3rem; color: var(--neon-blue); margin-bottom: 0.5rem; text-align: center; font-weight: bold;}
-        .event-desc { font-size: 1.4rem; margin-bottom: 1.5rem; text-align: center; line-height: 1.3;}
-        
-        .choice-btn {
-            display: block;
-            background-color: rgba(0,0,0,0.8);
-            color: var(--text-main);
-            border: 1px solid var(--neon-blue);
-            text-align: left;
-            margin-bottom: 0.8rem;
-            padding: 1rem;
-            font-size: 1.3rem;
-            box-shadow: none;
+        .reality-check { text-align: center; font-size: 1.3rem; color: var(--neon-yellow); margin: 1rem 0; font-style: italic;}
+
+        .event-card { 
+            border: 1px solid var(--neon-pink); padding: 1rem; background: rgba(255, 71, 182, 0.05); margin-bottom: 1rem; 
+            max-height: 50vh; /* Prevents buttons falling off small screens */
+            display: flex; flex-direction: column;
         }
+        .step-indicator { font-size: 1.4rem; color: var(--neon-blue); margin-bottom: 0.5rem; text-align: center; font-weight: bold;}
+        .event-desc { font-size: 1.5rem; margin-bottom: 1rem; text-align: center; line-height: 1.3;}
+        
+        #choices-container { overflow-y: auto; padding-right: 5px;}
+        .choice-btn { background-color: rgba(0,0,0,0.8); color: var(--text-main); border: 1px solid var(--neon-blue); text-align: left; margin-bottom: 0.8rem; padding: 1rem; font-size: 1.4rem;}
         .choice-btn strong { display: block; margin-bottom: 5px; color: var(--neon-blue); }
-        .choice-btn:hover, .choice-btn:active { background-color: var(--neon-blue); color: #000;}
+        .choice-btn:hover { background-color: var(--neon-blue); color: #000;}
         .choice-btn:hover strong { color: #000; }
-        .choice-effects { font-size: 1.1rem; color: #888; }
+        .choice-effects { font-size: 1.2rem; color: #888; }
         
-        .turn-info { text-align: center; font-size: 1.6rem; color: var(--neon-blue); margin-bottom: 0.5rem;}
-        
-        .log-container {
-            border: 1px solid var(--neon-green); background: rgba(57, 255, 20, 0.05); padding: 1rem; margin-bottom: 1rem; min-height: 80px; display: flex; flex-direction: column; justify-content: center;
-        }
-        .log { font-size: 1.3rem; color: var(--neon-green); text-align: center; margin-bottom: 5px; }
-        .log-alert { color: var(--neon-pink); font-style: italic; display: block; text-align: center; font-size: 1.2rem;}
+        .log-container { border: 1px solid var(--neon-green); background: rgba(92, 255, 59, 0.05); padding: 1rem; margin-bottom: 1rem; min-height: 80px; display: flex; flex-direction: column; justify-content: center; cursor: pointer;}
+        .log { font-size: 1.4rem; color: var(--neon-green); text-align: center; margin-bottom: 5px; }
+        .log-alert { color: var(--neon-pink); font-style: italic; display: block; text-align: center; font-size: 1.3rem;}
+        .skip-hint { font-size: 1rem; color: #555; text-align: center; margin-top: 5px;}
 
         /* Game Over Reports */
-        .report-box { border: 1px solid var(--neon-blue); background: rgba(0, 255, 255, 0.05); padding: 1rem; margin-bottom: 1rem;}
+        .report-box { border: 1px solid var(--neon-blue); background: rgba(77, 238, 234, 0.05); padding: 1rem; margin-bottom: 1rem;}
         .memoir-text { font-size: 1.4rem; line-height: 1.4; color: #ccc; text-align: justify;}
-        .tax-line { display: flex; justify-content: space-between; font-size: 1.3rem; margin-bottom: 5px; border-bottom: 1px dotted #444;}
+        .tax-line { display: flex; justify-content: space-between; font-size: 1.4rem; margin-bottom: 5px; border-bottom: 1px dotted #444;}
         .tax-total { color: var(--neon-red); font-weight: bold; }
-        .net-estate { color: var(--neon-green); font-weight: bold; font-size: 1.5rem; margin-top: 10px; border-top: 1px solid var(--neon-green); padding-top: 5px;}
+        .net-estate { color: var(--neon-green); font-weight: bold; font-size: 1.6rem; margin-top: 10px; border-top: 1px solid var(--neon-green); padding-top: 5px;}
         
-        /* Leaderboard */
-        .leaderboard { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 1.2rem;}
+        .leaderboard { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 1.3rem;}
         .leaderboard th { color: var(--neon-yellow); border-bottom: 1px solid var(--neon-yellow); padding: 5px; text-align: left; }
         .leaderboard td { padding: 5px; border-bottom: 1px dashed #444; }
         .new-record { color: var(--neon-green); font-weight: bold; animation: pulseRed 1s infinite; display: inline-block; margin-left: 10px;}
 
         /* Sponsor Box */
-        .sponsor-box { border: 2px solid var(--neon-green); background: rgba(57, 255, 20, 0.1); padding: 1.5rem; text-align: center; margin-bottom: 1.5rem;}
+        .sponsor-box { border: 2px solid var(--neon-green); background: rgba(92, 255, 59, 0.1); padding: 1.5rem; text-align: center; margin-bottom: 1.5rem;}
         .sponsor-box h3 { color: var(--neon-green); font-size: 1.8rem; text-shadow: 0 0 5px var(--neon-green);}
-        .sponsor-box p { font-size: 1.3rem; margin-bottom: 1.5rem; color: #e0e0e0; line-height: 1.4;}
-        .sponsor-link { display: inline-block; padding: 1rem 2rem; background: var(--neon-green); color: #000; font-size: 1.4rem; text-decoration: none; font-weight: bold; text-transform: uppercase; box-shadow: 0 0 15px var(--neon-green); transition: 0.2s;}
-        .sponsor-link:hover { background: #fff; color: #000; box-shadow: 0 0 25px #fff;}
-
-        /* Briefing Style */
-        .briefing-rule { margin-bottom: 1.5rem; font-size: 1.4rem; line-height: 1.3; }
-        .briefing-rule strong { display: block; font-size: 1.6rem; margin-bottom: 5px; }
+        .sponsor-box p { font-size: 1.4rem; margin-bottom: 1.5rem; color: #e0e0e0; line-height: 1.4;}
+        .sponsor-link { display: inline-block; padding: 1rem 2rem; background: var(--neon-green); color: #000; font-size: 1.5rem; text-decoration: none; font-weight: bold; text-transform: uppercase; transition: 0.2s;}
+        .sponsor-link:hover { background: #fff; box-shadow: 0 0 20px #fff;}
 
     </style>
 </head>
 <body>
 
 <div id="app">
-    <div id="setup-screen">
-        <h1>Golden Years: 2084</h1>
-        <p style="text-align:center; font-size:1.3rem; color: var(--neon-blue);">System Booting... Enter financial parameters.</p>
+    <div class="scrollable-content" id="main-content-area">
         
-        <div class="form-group">
-            <label>Current Age</label>
-            <input type="number" id="inp-age" value="30">
-        </div>
-        <div class="form-group">
-            <label>Retirement Age Target</label>
-            <input type="number" id="inp-retire-age" value="67">
-        </div>
-        <div class="form-group">
-            <label>Current Pension Pot (£)</label>
-            <input type="number" id="inp-pot" value="15000">
-        </div>
-        <div class="form-group">
-            <label>Current Salary (£)</label>
-            <input type="number" id="inp-salary" value="40000">
-        </div>
-
-        <button id="toggle-adv-btn" class="btn-secondary" onclick="toggleAdvanced()">[+] ADVANCED SIMULATION SETTINGS</button>
-
-        <div id="advanced-settings" class="hidden" style="margin-top: 1rem; padding: 1rem; border: 1px dashed #444;">
+        <div id="setup-screen">
+            <h1>Golden Years: 2084</h1>
+            <p style="text-align:center; font-size:1.4rem; color: var(--neon-blue); margin-bottom: 2rem;">System Booting... Enter financial parameters.</p>
+            
             <div class="form-group">
-                <label>Relationship Status</label>
-                <select id="inp-partner">
-                    <option value="single">Single (Standard Costs, 1x Pension)</option>
-                    <option value="couple">Couple (1.5x Costs, 2x Pension)</option>
-                </select>
+                <label>Current Age</label>
+                <input type="number" id="inp-age" value="30">
             </div>
             <div class="form-group">
-                <label>Starting Trait</label>
-                <select id="inp-trait">
-                    <option value="none">Standard Retiree (No modifiers)</option>
-                    <option value="hedonist">The Hedonist (Cheap luxury, faster HP drain)</option>
-                    <option value="healthnut">The Health Nut (Slower HP drain, Joy hates frugality)</option>
-                    <option value="paranoid">The Paranoid Saver (Immune to scams, max starting Joy 80%)</option>
-                </select>
+                <label>Retirement Age Target</label>
+                <input type="number" id="inp-retire-age" value="67">
             </div>
             <div class="form-group">
-                <label>Pension Contribution (%)</label>
-                <input type="number" id="inp-contribution" value="8" min="0" max="100">
-                <span class="warning-text">Contributions > 8% will limit starting Joy score.</span>
+                <label>Current Pension Pot (£)</label>
+                <input type="number" id="inp-pot" value="15000" oninput="formatInput(this, 'disp-pot')">
+                <span id="disp-pot" class="formatted-val">£15,000</span>
             </div>
             <div class="form-group">
-                <label>Retirement Investment Strategy</label>
-                <select id="inp-risk">
-                    <option value="low">Low Risk (Gov Bonds: Steady 2-4% growth)</option>
-                    <option value="med" selected>Medium Risk (Index Funds: -5% to +12%)</option>
-                    <option value="high">High Risk (Crypto/Stocks: -20% to +25%)</option>
-                </select>
+                <label>Current Salary (£)</label>
+                <input type="number" id="inp-salary" value="40000" oninput="formatInput(this, 'disp-salary')">
+                <span id="disp-salary" class="formatted-val">£40,000</span>
+            </div>
+
+            <button id="toggle-adv-btn" class="btn-secondary" onclick="toggleAdvanced()">[+] ADVANCED SETTINGS</button>
+
+            <div id="advanced-settings" class="hidden" style="margin-top: 1rem; padding: 1rem; border: 1px dashed #444;">
+                <div class="form-group">
+                    <label>Relationship Status</label>
+                    <select id="inp-partner">
+                        <option value="single">Single (Standard Costs, 1x Pension)</option>
+                        <option value="couple">Couple (1.5x Costs, 2x Pension)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Starting Trait</label>
+                    <select id="inp-trait">
+                        <option value="none">Standard Retiree (No modifiers)</option>
+                        <option value="hedonist">The Hedonist (Cheap luxury, faster HP drain)</option>
+                        <option value="healthnut">The Health Nut (Slower HP drain, Joy hates frugality)</option>
+                        <option value="paranoid">The Paranoid Saver (Immune to scams, max starting Joy 80%)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Pension Contribution (%)</label>
+                    <input type="number" id="inp-contribution" value="8" min="0" max="100">
+                    <span class="warning-text">Contributions > 8% will limit your starting Joy score.</span>
+                </div>
+                <div class="form-group">
+                    <label>Retirement Investment Strategy</label>
+                    <select id="inp-risk">
+                        <option value="low">Low Risk (Gov Bonds: Steady 2-4% growth)</option>
+                        <option value="med" selected>Medium Risk (Index Funds: -5% to +12%)</option>
+                        <option value="high">High Risk (Crypto/Stocks: -20% to +25%)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button onclick="prepareSimulation()" style="margin-top: 2rem;">INITIALIZE SIMULATION</button>
+            <p id="hindsight-msg" style="text-align:center; color: var(--neon-green); font-size: 1.3rem; margin-top: 1rem;"></p>
+        </div>
+
+        <div id="tutorial-screen" class="hidden">
+            <h1 style="color: var(--neon-red);">SYSTEM BRIEFING</h1>
+            <div style="border: 1px dashed var(--neon-red); padding: 1.5rem; margin: 2rem 0; background: rgba(255,51,85,0.05);">
+                <p style="font-size: 1.4rem; margin-bottom: 1.5rem; color: #ccc;">Welcome to the decumulation phase. The rules are simple, the reality is harsh.</p>
+                
+                <div style="margin-bottom: 1.5rem; font-size: 1.4rem; line-height: 1.3;">
+                    <strong style="display: block; font-size: 1.7rem; margin-bottom: 5px; color: var(--neon-green);">1. YOUR METERS</strong>
+                    Keep HP and JOY out of the red. If either hits zero, your simulation terminates.
+                </div>
+                <div style="margin-bottom: 1.5rem; font-size: 1.4rem; line-height: 1.3;">
+                    <strong style="display: block; font-size: 1.7rem; margin-bottom: 5px; color: var(--neon-pink);">2. BLIND CHOICES</strong>
+                    Life doesn't come with a spreadsheet. The HP and JOY impacts of your choices are entirely hidden. Trust your gut.
+                </div>
+                <div style="margin-bottom: 1rem; font-size: 1.4rem; line-height: 1.3;">
+                    <strong style="display: block; font-size: 1.7rem; margin-bottom: 5px; color: var(--neon-blue);">3. THE INFLATION MONSTER</strong>
+                    Prices rise relentlessly every year. Watch your wealth trajectory indicator [▲/▼]. Do not run out of money.
+                </div>
+            </div>
+            <button onclick="startGame()" style="border-color: var(--neon-green); color: var(--neon-green);">ACKNOWLEDGE & COMMENCE</button>
+        </div>
+
+        <div id="game-screen" class="hidden">
+            <div class="stats-wrapper">
+                <div class="turn-info">AGE: <span id="ui-age"></span> | YEAR: <span id="ui-year">1</span></div>
+                <div class="stat-money">£<span id="ui-money"></span> <span id="ui-trend" class="trend-icon">▶</span></div>
+                <div class="stat-row">
+                    <span class="stat-label">HP</span>
+                    <div class="meter-container"><div id="bar-health" class="meter-fill" style="background:var(--neon-green);"></div></div>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">JOY</span>
+                    <div class="meter-container"><div id="bar-happiness" class="meter-fill" style="background:var(--neon-pink);"></div></div>
+                </div>
+                <div class="control-panel" id="ui-controls">
+                    <button class="control-btn" onclick="openLifestyleMenu()">⚙️ LIFESTYLE</button>
+                    <button class="control-btn" onclick="openRiskMenu()">📈 RISK</button>
+                </div>
+            </div>
+
+            <div style="padding-top: 10px;">
+                <div class="reality-check" id="ui-reality">REALITY CHECK: 1 Pint of Milk = £1.50</div>
+
+                <div class="log-container" onclick="skipTyping()">
+                    <div class="log" id="ui-log"></div>
+                    <div class="log-alert" id="ui-log-alert"></div>
+                    <div class="skip-hint" id="ui-skip-hint">(Tap to skip)</div>
+                </div>
+
+                <div class="event-card" id="interaction-zone">
+                    <div class="step-indicator" id="event-step">PHASE 1</div>
+                    <h2 id="event-title">Title</h2>
+                    <p class="event-desc" id="event-desc">Description</p>
+                    <div id="choices-container"></div>
+                </div>
             </div>
         </div>
 
-        <button onclick="prepareSimulation()">INITIALIZE SIMULATION</button>
-        <p id="hindsight-msg" style="text-align:center; color: var(--neon-green); font-size: 1.2rem;"></p>
-    </div>
+        <div id="game-over-screen" class="hidden">
+            <h1 style="color:var(--neon-red);">SIMULATION TERMINATED</h1>
+            <h2 id="end-reason" style="color: var(--neon-red); font-size: 2rem;"></h2>
+            <p style="font-size: 1.8rem; text-align:center; margin-top: 0;">Survival Age: <strong id="end-age" style="color:var(--neon-blue);"></strong></p>
 
-    <div id="tutorial-screen" class="hidden">
-        <h1 style="color: var(--neon-red);">SYSTEM BRIEFING</h1>
-        <div style="border: 1px dashed var(--neon-red); padding: 1.5rem; margin: 1.5rem 0; background: rgba(255,7,58,0.05);">
-            <div class="briefing-rule">
-                <strong style="color: var(--neon-green);">1. YOUR METERS</strong>
-                Keep HP and JOY out of the red. If either hits zero, your simulation terminates.
+            <div class="report-box">
+                <h4>Terminal Memoir</h4>
+                <div id="memoir-output" class="memoir-text"></div>
             </div>
-            <div class="briefing-rule">
-                <strong style="color: var(--neon-pink);">2. BLIND CHOICES</strong>
-                Life doesn't come with a spreadsheet. The HP and JOY impacts of your choices are entirely hidden. Trust your gut.
+
+            <div class="report-box" id="tax-box">
+                <h4>Estate & Inheritance Tax</h4>
+                <div class="tax-line"><span>Final Gross Estate:</span><span id="tax-gross"></span></div>
+                <div class="tax-line"><span>Tax-Free Threshold:</span><span>£325,000</span></div>
+                <div class="tax-line tax-total"><span>HMRC Deduction (40%):</span><span id="tax-deduction"></span></div>
+                <div class="tax-line net-estate"><span>Net Inheritance Left:</span><span id="tax-net"></span></div>
             </div>
-            <div class="briefing-rule">
-                <strong style="color: var(--neon-blue);">3. THE INFLATION MONSTER</strong>
-                Prices rise relentlessly every year. Watch your wealth trajectory indicator [▲/▼]. Do not run out of money.
+
+            <div class="sponsor-box">
+                <h3>Brought to you by L&G</h3>
+                <p>In 2084, retirement is a dystopian arcade survival game. In the real world, it shouldn't be. Take the guesswork out of your future and plan for real.</p>
+                <a href="https://myaccount.landg.com" target="_blank" class="sponsor-link">Secure Your Future</a>
             </div>
-        </div>
-        <button onclick="startGame()" style="border-color: var(--neon-green); color: var(--neon-green); text-shadow: 0 0 5px var(--neon-green);">ACKNOWLEDGE & COMMENCE</button>
-    </div>
 
-    <div id="game-screen" class="hidden">
-        <div class="turn-info">
-            AGE: <span id="ui-age"></span> | YEAR: <span id="ui-year">1</span>
-        </div>
-        
-        <div class="stats-grid">
-            <div class="stat-money">
-                £<span id="ui-money"></span> <span id="ui-trend" class="trend-icon">▶</span>
+            <div class="report-box">
+                <h4>Global Leaderboard <span id="new-record-alert" class="new-record hidden">NEW RECORD!</span></h4>
+                <table class="leaderboard">
+                    <thead><tr><th>Rank</th><th>Age</th><th>Joy</th><th>Net Estate</th></tr></thead>
+                    <tbody id="leaderboard-body"></tbody>
+                </table>
             </div>
-            <div class="stat-row">
-                <span class="stat-label">HP</span>
-                <div class="meter-container"><div id="bar-health" class="meter-fill" style="background:var(--neon-green);"></div></div>
+            
+            <div style="border: 1px dashed var(--neon-blue); padding: 1rem; margin-top: 1rem;">
+                <button onclick="restartWithHindsight(12)" style="font-size: 1.3rem; border-color: var(--neon-blue); color: var(--neon-blue);">REBOOT W/ 12% CONTRIBUTION</button>
+                <button onclick="restartWithHindsight(15)" style="font-size: 1.3rem; border-color: var(--neon-green); color: var(--neon-green);">REBOOT W/ 15% CONTRIBUTION</button>
+                <button onclick="resetToStart()" style="font-size: 1.3rem; border-color: #fff; color: #fff; box-shadow:none;">RETURN TO MAIN MENU</button>
             </div>
-            <div class="stat-row">
-                <span class="stat-label">JOY</span>
-                <div class="meter-container"><div id="bar-happiness" class="meter-fill" style="background:var(--neon-pink);"></div></div>
-            </div>
-        </div>
-
-        <div class="reality-check" id="ui-reality">REALITY CHECK: 1 Pint of Milk = £1.50</div>
-
-        <div class="log-container">
-            <div class="log" id="ui-log"></div>
-            <div class="log-alert" id="ui-log-alert"></div>
-        </div>
-
-        <div class="event-card" id="interaction-zone">
-            <div class="step-indicator" id="event-step">PHASE 1</div>
-            <h2 id="event-title">Title</h2>
-            <p class="event-desc" id="event-desc">Description</p>
-            <div id="choices-container"></div>
-        </div>
-    </div>
-
-    <div id="game-over-screen" class="hidden">
-        <h1 style="color:var(--neon-red);">SIMULATION TERMINATED</h1>
-        <h2 id="end-reason" style="color: var(--neon-red); font-size: 2rem;"></h2>
-        <p style="font-size: 1.6rem; text-align:center; margin-top: 0;">Survival Age: <strong id="end-age" style="color:var(--neon-blue);"></strong></p>
-
-        <div class="report-box">
-            <h4>Terminal Memoir</h4>
-            <div id="memoir-output" class="memoir-text"></div>
-        </div>
-
-        <div class="report-box" id="tax-box">
-            <h4>Estate & Inheritance Tax</h4>
-            <div class="tax-line"><span>Final Gross Estate:</span><span id="tax-gross"></span></div>
-            <div class="tax-line"><span>Tax-Free Threshold:</span><span>£325,000</span></div>
-            <div class="tax-line tax-total"><span>HMRC Deduction (40%):</span><span id="tax-deduction"></span></div>
-            <div class="tax-line net-estate"><span>Net Inheritance Left:</span><span id="tax-net"></span></div>
-        </div>
-
-        <div class="sponsor-box">
-            <h3>Brought to you by L&G</h3>
-            <p>This game has been brought to you by L&G. It might be a bit of fun for now, but if you want to get serious about your pension planning, log on to <strong>myaccount.landg.com</strong> to plan your retirement.</p>
-            <a href="https://myaccount.landg.com" target="_blank" class="sponsor-link">Plan For Real</a>
-        </div>
-
-        <div class="report-box">
-            <h4>Global Leaderboard <span id="new-record-alert" class="new-record hidden">NEW RECORD!</span></h4>
-            <table class="leaderboard">
-                <thead><tr><th>Rank</th><th>Age</th><th>Joy</th><th>Net Estate</th></tr></thead>
-                <tbody id="leaderboard-body"></tbody>
-            </table>
-        </div>
-        
-        <div style="border: 1px dashed var(--neon-blue); padding: 1rem; margin-top: 1rem;">
-            <button onclick="restartWithHindsight(12)" style="font-size: 1.2rem; border-color: var(--neon-blue); color: var(--neon-blue);">REBOOT W/ 12% CONTRIBUTION</button>
-            <button onclick="restartWithHindsight(15)" style="font-size: 1.2rem; border-color: var(--neon-green); color: var(--neon-green);">REBOOT W/ 15% CONTRIBUTION</button>
-            <button onclick="resetToStart()" style="font-size: 1.2rem; border-color: #fff; color: #fff; box-shadow:none;">RETURN TO MAIN MENU</button>
         </div>
     </div>
 </div>
@@ -368,7 +363,6 @@
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if (audioCtx.state === 'suspended') audioCtx.resume();
     }
-    
     function playTone(freq, type, duration, vol=0.1) {
         if (!audioCtx) return;
         const osc = audioCtx.createOscillator();
@@ -382,7 +376,6 @@
         osc.start();
         osc.stop(audioCtx.currentTime + duration);
     }
-    
     function sfxBlip() { playTone(600, 'square', 0.1, 0.05); }
     function sfxAction() { playTone(400, 'square', 0.1, 0.05); setTimeout(()=>playTone(600, 'square', 0.15, 0.05), 100); }
     function sfxDamage() { playTone(150, 'sawtooth', 0.4, 0.1); }
@@ -394,19 +387,16 @@
         age: 0, money: 0, lastMoney: 0, health: 100, happiness: 100,
         turn: 1, inflationMult: 1.0, basePension: 11500,
         risk: 'med', partner: 'single', trait: 'none', 
-        history: [], initialLogMsg: ""
+        history: [], initialLogMsg: "",
+        lifestyle: null // Persistent lifestyle object
     };
 
     let activeScenarios = []; 
     const currency = new Intl.NumberFormat('en-GB', { maximumFractionDigits: 0 });
 
     const realityItems = [
-        { name: "Pint of Milk", price: 1.50 },
-        { name: "Cup of Coffee", price: 3.50 },
-        { name: "Cinema Ticket", price: 12.00 },
-        { name: "Plumber Callout", price: 150.00 },
-        { name: "Average Family Car", price: 28000.00 },
-        { name: "Loaf of Bread", price: 1.40 },
+        { name: "Pint of Milk", price: 1.50 }, { name: "Cup of Coffee", price: 3.50 }, { name: "Cinema Ticket", price: 12.00 },
+        { name: "Plumber Callout", price: 150.00 }, { name: "Average Family Car", price: 28000.00 }, { name: "Loaf of Bread", price: 1.40 },
         { name: "Energy Bill (Monthly)", price: 250.00 }
     ];
 
@@ -431,41 +421,81 @@
     ];
 
     // --- UI HELPERS ---
+    function formatInput(el, dispId) {
+        let val = parseInt(el.value);
+        if (isNaN(val)) val = 0;
+        document.getElementById(dispId).innerText = `£${currency.format(val)}`;
+    }
+
     function toggleAdvanced() {
         sfxBlip();
         const adv = document.getElementById('advanced-settings');
         const btn = document.getElementById('toggle-adv-btn');
         if (adv.classList.contains('hidden')) {
             adv.classList.remove('hidden');
-            btn.innerText = '[-] HIDE ADVANCED SIMULATION SETTINGS';
+            btn.innerText = '[-] HIDE ADVANCED SETTINGS';
         } else {
             adv.classList.add('hidden');
-            btn.innerText = '[+] ADVANCED SIMULATION SETTINGS';
+            btn.innerText = '[+] ADVANCED SETTINGS';
         }
     }
 
-    function typeWriter(text, elementId, speed, callback) {
+    // --- TYPING ENGINE WITH SKIP ---
+    let isTyping = false;
+    let typeTimeouts = [];
+    let fullMainText = "";
+    let fullAlertText = "";
+    let typeCallback = null;
+
+    function typeWriter(text, elementId, speed, onComplete) {
         const el = document.getElementById(elementId);
         el.innerHTML = '';
         let i = 0;
         function type() {
             if (i < text.length) {
-                el.innerHTML += text.charAt(i); i++; setTimeout(type, speed);
-            } else if (callback) { setTimeout(callback, 200); }
+                el.innerHTML += text.charAt(i); i++; 
+                typeTimeouts.push(setTimeout(type, speed));
+            } else if (onComplete) { 
+                typeTimeouts.push(setTimeout(onComplete, 200)); 
+            }
         }
         type();
     }
 
+    function skipTyping() {
+        if (!isTyping) return;
+        typeTimeouts.forEach(t => clearTimeout(t));
+        typeTimeouts = [];
+        document.getElementById('ui-log').innerHTML = fullMainText;
+        document.getElementById('ui-log-alert').innerHTML = fullAlertText;
+        isTyping = false;
+        document.getElementById('ui-skip-hint').classList.add('hidden');
+        if (typeCallback) {
+            let cb = typeCallback;
+            typeCallback = null;
+            setTimeout(cb, 400); // Small pause before unlocking
+        }
+    }
+
     function processActionLog(mainText, alertText, sfxType, onComplete) {
         document.getElementById('interaction-zone').style.display = 'none'; 
+        document.getElementById('ui-controls').style.display = 'none';
+        
+        fullMainText = mainText; fullAlertText = alertText;
+        isTyping = true;
+        document.getElementById('ui-skip-hint').classList.remove('hidden');
+
+        typeCallback = () => {
+            if(sfxType === 'damage') sfxDamage(); else if(sfxType === 'action') sfxAction();
+            updateUI(); 
+            document.getElementById('interaction-zone').style.display = 'block'; 
+            document.getElementById('ui-controls').style.display = 'flex';
+            if (!checkGameOver() && onComplete) onComplete();
+        };
+
         typeWriter(mainText, 'ui-log', 15, () => {
             typeWriter(alertText, 'ui-log-alert', 15, () => {
-                if(sfxType === 'damage') sfxDamage(); else if(sfxType === 'action') sfxAction();
-                updateUI(); 
-                setTimeout(() => {
-                    document.getElementById('interaction-zone').style.display = 'block'; 
-                    if (!checkGameOver() && onComplete) onComplete();
-                }, 1200); 
+                if(isTyping) skipTyping(); // Auto-finish if not manually skipped
             });
         });
     }
@@ -487,8 +517,10 @@
         state.trait = document.getElementById('inp-trait').value;
         state.risk = document.getElementById('inp-risk').value;
         state.history = []; 
+        state.lifestyle = null;
         
-        const salaryGrowth = 1.03; const potGrowth = 1.05;
+        const salaryGrowth = 1.03; 
+        const potGrowth = 1.06; // Adjusted to massively reward high savers
         const yearsToWork = retireAge - currentAge;
 
         for (let i = 0; i < yearsToWork; i++) {
@@ -506,7 +538,7 @@
         state.turn = 1; state.inflationMult = 1.0; 
         
         state.money = Math.floor(pot); state.lastMoney = state.money;
-        state.initialLogMsg = `Pot reached £${currency.format(pot)}. Joy initialized.`;
+        state.initialLogMsg = `Pot reached £${currency.format(pot)}.`;
 
         if (state.age >= 67) {
             let pensionMult = state.partner === 'couple' ? 2 : 1;
@@ -515,7 +547,6 @@
             state.initialLogMsg += ` State pension added £${currency.format(initialPension)}.`;
         }
         
-        // Hide setup, show tutorial briefing
         document.getElementById('setup-screen').classList.add('hidden');
         document.getElementById('tutorial-screen').classList.remove('hidden');
     }
@@ -526,10 +557,11 @@
         document.getElementById('game-screen').classList.remove('hidden');
         
         document.getElementById('ui-log').innerText = state.initialLogMsg;
-        document.getElementById('ui-log-alert').innerText = "Survive as long as possible.";
+        document.getElementById('ui-log-alert').innerText = "System Initialized.";
+        document.getElementById('ui-skip-hint').classList.add('hidden');
 
         updateUI();
-        if (state.age < 75) loadWorkChoice(); else loadLifestyleChoice(); 
+        if (state.age < 75) loadWorkChoice(); else promptInitialLifestyle(); 
     }
 
     function getMeterColor(val, type) {
@@ -559,14 +591,114 @@
         if (state.health <= 25 || state.happiness <= 25) appContainer.classList.add('critical');
         else appContainer.classList.remove('critical');
 
-        // Rotating Inflation Shock
         let item = realityItems[state.turn % realityItems.length];
         let currentPrice = item.price * state.inflationMult;
         let formattedPrice = currentPrice > 1000 ? currency.format(currentPrice) : currentPrice.toFixed(2);
         document.getElementById('ui-reality').innerText = `REALITY CHECK: ${item.name} = £${formattedPrice}`;
     }
 
-    function applyStats(cost, healthEff, happEff, actionName, isMajorEvent, onComplete) {
+    // --- MENUS & CHOICES ---
+    function openLifestyleMenu() {
+        sfxBlip();
+        document.getElementById('event-step').innerText = "CONTROL PANEL";
+        document.getElementById('event-title').innerText = "CHANGE LIFESTYLE";
+        document.getElementById('event-desc').innerText = "Adjust your ongoing burn rate.";
+        
+        const container = document.getElementById('choices-container'); container.innerHTML = ''; 
+        let baseFrugal = 14400; let baseComfort = 26400; let baseLux = 45600;
+        if (state.partner === 'couple') { baseFrugal *= 1.5; baseComfort *= 1.5; baseLux *= 1.5; }
+        
+        let luxMult = state.trait === 'hedonist' ? 0.9 : 1.0;
+        let frugJoy = state.trait === 'healthnut' ? -30 : -15;
+
+        const lifestyles = [
+            { id: 'frugal', text: "Frugal (Survival)", cost: baseFrugal, h: -10, j: frugJoy },
+            { id: 'comfort', text: "Comfortable (Standard)", cost: baseComfort, h: 0, j: 0 },
+            { id: 'lux', text: "Luxurious (Premium)", cost: baseLux * luxMult, h: 8, j: 10 }
+        ];
+
+        lifestyles.forEach(choice => {
+            const inflatedCost = Math.floor(choice.cost * state.inflationMult);
+            const btn = document.createElement('button'); btn.className = 'choice-btn';
+            
+            let currentLabel = state.lifestyle && state.lifestyle.id === choice.id ? " (CURRENT)" : "";
+            
+            btn.innerHTML = `<strong>${choice.text}${currentLabel}</strong><div class="choice-effects">COST: £${currency.format(inflatedCost)}/yr</div>`;
+            btn.onclick = () => { 
+                sfxAction();
+                state.lifestyle = choice;
+                document.getElementById('ui-log').innerText = `Lifestyle set to: ${choice.text}`;
+                document.getElementById('ui-log-alert').innerText = "";
+                loadScenario(); 
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    function openRiskMenu() {
+        sfxBlip();
+        document.getElementById('event-step').innerText = "CONTROL PANEL";
+        document.getElementById('event-title').innerText = "CHANGE INVESTMENTS";
+        document.getElementById('event-desc').innerText = "Adjust your market exposure.";
+        
+        const container = document.getElementById('choices-container'); container.innerHTML = ''; 
+        
+        const profiles = [
+            { id: 'low', text: "Low Risk (Gov Bonds: Steady 2-4%)" },
+            { id: 'med', text: "Medium Risk (Index Funds: -5% to +12%)" },
+            { id: 'high', text: "High Risk (Crypto/Stocks: -20% to +25%)" }
+        ];
+
+        profiles.forEach(choice => {
+            const btn = document.createElement('button'); btn.className = 'choice-btn';
+            let currentLabel = state.risk === choice.id ? " (CURRENT)" : "";
+            btn.innerHTML = `<strong>${choice.text}${currentLabel}</strong>`;
+            btn.onclick = () => { 
+                sfxAction();
+                state.risk = choice.id;
+                document.getElementById('ui-log').innerText = `Risk profile updated.`;
+                document.getElementById('ui-log-alert').innerText = "";
+                loadScenario(); 
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    function promptInitialLifestyle() {
+        document.getElementById('ui-controls').style.display = 'none'; // Hide controls until set
+        document.getElementById('event-step').innerText = "PHASE 1: COST OF LIVING";
+        document.getElementById('event-title').innerText = "INITIAL LIFESTYLE SELECT";
+        document.getElementById('event-desc').innerText = "Choose your retirement baseline. (This deducts annually. You can change it later).";
+
+        const container = document.getElementById('choices-container'); container.innerHTML = ''; 
+
+        let baseFrugal = 14400; let baseComfort = 26400; let baseLux = 45600;
+        if (state.partner === 'couple') { baseFrugal *= 1.5; baseComfort *= 1.5; baseLux *= 1.5; }
+        
+        let luxMult = state.trait === 'hedonist' ? 0.9 : 1.0;
+        let frugJoy = state.trait === 'healthnut' ? -30 : -15;
+
+        const lifestyles = [
+            { id: 'frugal', text: "Frugal (Survival)", cost: baseFrugal, h: -10, j: frugJoy },
+            { id: 'comfort', text: "Comfortable (Standard)", cost: baseComfort, h: 0, j: 0 },
+            { id: 'lux', text: "Luxurious (Premium)", cost: baseLux * luxMult, h: 8, j: 10 }
+        ];
+
+        lifestyles.forEach(choice => {
+            const inflatedCost = Math.floor(choice.cost * state.inflationMult);
+            const btn = document.createElement('button'); btn.className = 'choice-btn';
+            btn.innerHTML = `<strong>${choice.text}</strong><div class="choice-effects">COST: £${currency.format(inflatedCost)}/yr | HP/JOY: ???</div>`;
+            btn.onclick = () => { 
+                sfxAction();
+                state.lifestyle = choice;
+                document.getElementById('ui-controls').style.display = 'flex';
+                loadScenario(); 
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    function applyEvent(cost, healthEff, happEff, actionName, isMajorEvent, onComplete) {
         if (state.trait === 'paranoid' && isMajorEvent && isMajorEvent.isScam) {
             cost = 0; healthEff = 0; happEff = 5; 
             actionName = "Dodged a scam";
@@ -578,9 +710,7 @@
         if (state.health > 100) state.health = 100;
         if (state.happiness > 100) state.happiness = 100;
 
-        if (isMajorEvent && isMajorEvent.log) {
-            state.history.push({ age: state.age, log: isMajorEvent.log });
-        }
+        if (isMajorEvent && isMajorEvent.log) state.history.push({ age: state.age, log: isMajorEvent.log });
 
         let hText = healthEff >= 0 ? `+${healthEff} HP` : `${healthEff} HP`;
         let jText = happEff >= 0 ? `+${happEff} JOY` : `${happEff} JOY`;
@@ -591,6 +721,104 @@
         let soundType = (healthEff < 0 || happEff <= -10) ? 'damage' : 'action';
 
         processActionLog(mainLog, alertLog, soundType, onComplete);
+    }
+
+    function loadWorkChoice() {
+        document.getElementById('ui-controls').style.display = 'none';
+        document.getElementById('event-step').innerText = "PHASE 0: UN-RETIREMENT";
+        document.getElementById('event-title').innerText = "PART-TIME WORK";
+        document.getElementById('event-desc').innerText = "Take a job to boost funds? (HP/JOY Impacts hidden)";
+
+        const container = document.getElementById('choices-container'); container.innerHTML = ''; 
+        const workIncome = Math.floor(-12000 * state.inflationMult);
+
+        const btnWork = document.createElement('button'); btnWork.className = 'choice-btn';
+        btnWork.innerHTML = `<strong>Take the job</strong><div class="choice-effects">INCOME: £${currency.format(Math.abs(workIncome))} | HP/JOY: ???</div>`;
+        btnWork.onclick = () => { applyEvent(workIncome, -4, -10, "Took a part-time job", false, promptInitialLifestyle); };
+        container.appendChild(btnWork);
+
+        const btnRest = document.createElement('button'); btnRest.className = 'choice-btn';
+        btnRest.innerHTML = `<strong>Stay retired</strong><div class="choice-effects">INCOME: £0 | HP/JOY: ???</div>`;
+        btnRest.onclick = () => { applyEvent(0, 0, 2, "Stayed fully retired", false, promptInitialLifestyle); };
+        container.appendChild(btnRest);
+    }
+
+    function triggerCareHomeBoss() {
+        document.getElementById('ui-controls').style.display = 'none';
+        document.getElementById('event-step').innerText = "CRITICAL ALERT";
+        document.getElementById('event-title').innerText = "SOCIAL CARE MANDATE";
+        document.getElementById('event-desc').innerText = "Health failure detected. Independent living revoked.";
+        
+        const container = document.getElementById('choices-container'); container.innerHTML = ''; 
+        let baseCareCost = 50000;
+        if (state.partner === 'couple') baseCareCost *= 2;
+        const careCost = Math.floor(baseCareCost * state.inflationMult);
+
+        const btn = document.createElement('button'); btn.className = 'choice-btn';
+        btn.innerHTML = `<strong style="color:var(--neon-red);">Accept Mandate & Pay Fees</strong><div class="choice-effects">COST: £${currency.format(careCost)}/yr</div>`;
+        btn.onclick = () => { 
+            // Lock lifestyle to Care Home
+            state.lifestyle = { id: 'care', text: "Residential Care", cost: baseCareCost, h: 5, j: -20 };
+            applyEvent(careCost, 10, -25, "Moved to Care Home", {log:"was forcibly moved into a residential care facility"}, loadScenario); 
+        };
+        container.appendChild(btn);
+    }
+
+    function loadScenario() {
+        if (state.age >= 80 && state.health < 30 && (!state.lifestyle || state.lifestyle.id !== 'care')) { triggerCareHomeBoss(); return; }
+
+        document.getElementById('event-step').innerText = "PHASE 2: ANOMALY DETECTED";
+        if (activeScenarios.length === 0) activeScenarios = [...masterScenarios].sort(() => 0.5 - Math.random());
+        const scenario = activeScenarios.pop();
+        
+        document.getElementById('event-title').innerText = scenario.title;
+        document.getElementById('event-desc').innerText = scenario.desc;
+        
+        const container = document.getElementById('choices-container'); container.innerHTML = ''; 
+
+        scenario.choices.forEach(choice => {
+            const inflatedCost = Math.floor(choice.cost * state.inflationMult);
+            const btn = document.createElement('button'); btn.className = 'choice-btn';
+            btn.innerHTML = `<strong>${choice.text}</strong><div class="choice-effects">COST: £${currency.format(inflatedCost)} | HP/JOY: ???</div>`;
+            btn.onclick = () => { applyEvent(inflatedCost, choice.h, choice.j, choice.text, choice, endOfYearTransition); };
+            container.appendChild(btn);
+        });
+    }
+
+    function endOfYearTransition() {
+        state.age++; state.turn++; state.inflationMult *= 1.04; 
+        
+        // 1. Calculate Market Return
+        const marketReturn = (Math.random() * ((state.risk==='low'?0.05:(state.risk==='high'?0.25:0.12)) - (state.risk==='low'?0.02:(state.risk==='high'?-0.20:-0.05)))) + (state.risk==='low'?0.02:(state.risk==='high'?-0.20:-0.05));
+        const marketGains = Math.floor(state.money * marketReturn);
+        state.money += marketGains;
+
+        // 2. Add Pension
+        let pensionThisYear = 0;
+        if (state.age >= 67) {
+            pensionThisYear = Math.floor((state.basePension * (state.partner==='couple'?2:1)) * state.inflationMult);
+            state.money += pensionThisYear;
+        }
+
+        // 3. Deduct Persistent Lifestyle
+        let lifeCost = Math.floor(state.lifestyle.cost * state.inflationMult);
+        state.money -= lifeCost;
+        state.health += state.lifestyle.h;
+        state.happiness += state.lifestyle.j;
+        
+        // 4. Aging Penalty
+        let baseDrain = 3 + Math.floor(Math.max(0, state.age - 65) / 5); 
+        if (state.trait === 'hedonist') baseDrain += 1;
+        if (state.trait === 'healthnut') baseDrain = Math.max(1, baseDrain - 1);
+        state.health -= baseDrain; 
+
+        if (state.health > 100) state.health = 100;
+        if (state.happiness > 100) state.happiness = 100;
+
+        let marketText = marketGains >= 0 ? `+£${currency.format(marketGains)}` : `-£${currency.format(Math.abs(marketGains))}`;
+        let logMsg = `YEAR ${state.turn-1} END SUMMARY: Living (-£${currency.format(lifeCost)}). Market (${marketText}). Pension (+£${currency.format(pensionThisYear)}).`;
+
+        processActionLog(logMsg, `AGING PENALTY: -${baseDrain} HP`, 'action', loadScenario);
     }
 
     // --- GAME OVER & REPORTS ---
@@ -621,10 +849,7 @@
     }
 
     function calculateTaxes() {
-        if (state.money <= 0) {
-            document.getElementById('tax-box').style.display = 'none';
-            return 0;
-        }
+        if (state.money <= 0) { document.getElementById('tax-box').style.display = 'none'; return 0; }
         document.getElementById('tax-box').style.display = 'block';
         document.getElementById('tax-gross').innerText = `£${currency.format(state.money)}`;
         
@@ -647,14 +872,10 @@
         scores = scores.slice(0, 5); 
         localStorage.setItem('goldenYearsScores', JSON.stringify(scores));
 
-        if (scores[0].age === newScore.age && scores[0].joy === newScore.joy) {
-            document.getElementById('new-record-alert').classList.remove('hidden');
-        } else {
-            document.getElementById('new-record-alert').classList.add('hidden');
-        }
+        if (scores[0].age === newScore.age && scores[0].joy === newScore.joy) document.getElementById('new-record-alert').classList.remove('hidden');
+        else document.getElementById('new-record-alert').classList.add('hidden');
 
-        const tbody = document.getElementById('leaderboard-body');
-        tbody.innerHTML = '';
+        const tbody = document.getElementById('leaderboard-body'); tbody.innerHTML = '';
         scores.forEach((s, i) => {
             let tr = document.createElement('tr');
             tr.innerHTML = `<td>#${i+1}</td><td>${s.age}</td><td>${s.joy}%</td><td>£${currency.format(s.net)}</td>`;
@@ -684,117 +905,6 @@
             return true;
         }
         return false;
-    }
-
-    function loadWorkChoice() {
-        document.getElementById('event-step').innerText = "PHASE 0: UN-RETIREMENT";
-        document.getElementById('event-title').innerText = "PART-TIME WORK";
-        document.getElementById('event-desc').innerText = "Take a job to boost funds? (HP/JOY Impacts hidden)";
-
-        const container = document.getElementById('choices-container'); container.innerHTML = ''; 
-        const workIncome = Math.floor(-12000 * state.inflationMult);
-
-        const btnWork = document.createElement('button'); btnWork.className = 'choice-btn';
-        btnWork.innerHTML = `<strong>Take the job</strong><div class="choice-effects">INCOME: £${currency.format(Math.abs(workIncome))} | HP/JOY: ???</div>`;
-        btnWork.onclick = () => { applyStats(workIncome, -4, -10, "Took a part-time job", false, loadLifestyleChoice); };
-        container.appendChild(btnWork);
-
-        const btnRest = document.createElement('button'); btnRest.className = 'choice-btn';
-        btnRest.innerHTML = `<strong>Stay retired</strong><div class="choice-effects">INCOME: £0 | HP/JOY: ???</div>`;
-        btnRest.onclick = () => { applyStats(0, 0, 2, "Stayed fully retired", false, loadLifestyleChoice); };
-        container.appendChild(btnRest);
-    }
-
-    function loadLifestyleChoice() {
-        if (state.age >= 80 && state.health < 30) { triggerCareHomeBoss(); return; }
-
-        document.getElementById('event-step').innerText = "PHASE 1: COST OF LIVING";
-        document.getElementById('event-title').innerText = "LIFESTYLE SELECT";
-        document.getElementById('event-desc').innerText = "Choose your burn rate. (HP/JOY impacts hidden)";
-
-        const container = document.getElementById('choices-container'); container.innerHTML = ''; 
-
-        let baseFrugal = 14400; let baseComfort = 26400; let baseLux = 45600;
-        if (state.partner === 'couple') { baseFrugal *= 1.5; baseComfort *= 1.5; baseLux *= 1.5; }
-        
-        let luxMult = state.trait === 'hedonist' ? 0.9 : 1.0;
-        let frugJoy = state.trait === 'healthnut' ? -30 : -15;
-
-        const lifestyles = [
-            { text: "Frugal (Survival)", cost: baseFrugal, h: -10, j: frugJoy },
-            { text: "Comfortable (Standard)", cost: baseComfort, h: 0, j: 0 },
-            { text: "Luxurious (Premium)", cost: baseLux * luxMult, h: 8, j: 10 }
-        ];
-
-        lifestyles.forEach(choice => {
-            const inflatedCost = Math.floor(choice.cost * state.inflationMult);
-            const btn = document.createElement('button'); btn.className = 'choice-btn';
-            btn.innerHTML = `<strong>${choice.text}</strong><div class="choice-effects">COST: £${currency.format(inflatedCost)} | HP/JOY: ???</div>`;
-            btn.onclick = () => { applyStats(inflatedCost, choice.h, choice.j, "Selected lifestyle", false, loadScenario); };
-            container.appendChild(btn);
-        });
-    }
-
-    function triggerCareHomeBoss() {
-        document.getElementById('event-step').innerText = "CRITICAL ALERT";
-        document.getElementById('event-title').innerText = "SOCIAL CARE MANDATE";
-        document.getElementById('event-desc').innerText = "Health failure detected. Independent living revoked.";
-        
-        const container = document.getElementById('choices-container'); container.innerHTML = ''; 
-        let baseCareCost = 50000;
-        if (state.partner === 'couple') baseCareCost *= 2;
-        const careCost = Math.floor(baseCareCost * state.inflationMult);
-
-        const btn = document.createElement('button'); btn.className = 'choice-btn';
-        btn.innerHTML = `<strong style="color:var(--neon-red);">Accept Mandate & Pay Fees</strong><div class="choice-effects">COST: £${currency.format(careCost)} | HP/JOY: ???</div>`;
-        btn.onclick = () => { applyStats(careCost, 10, -25, "Moved to Care Home", {log:"was forcibly moved into a residential care facility"}, loadScenario); };
-        container.appendChild(btn);
-    }
-
-    function loadScenario() {
-        document.getElementById('event-step').innerText = "PHASE 2: ANOMALY DETECTED";
-        if (activeScenarios.length === 0) activeScenarios = [...masterScenarios].sort(() => 0.5 - Math.random());
-        const scenario = activeScenarios.pop();
-        
-        document.getElementById('event-title').innerText = scenario.title;
-        document.getElementById('event-desc').innerText = scenario.desc;
-        
-        const container = document.getElementById('choices-container'); container.innerHTML = ''; 
-
-        scenario.choices.forEach(choice => {
-            const inflatedCost = Math.floor(choice.cost * state.inflationMult);
-            const btn = document.createElement('button'); btn.className = 'choice-btn';
-            btn.innerHTML = `<strong>${choice.text}</strong><div class="choice-effects">COST: £${currency.format(inflatedCost)} | HP/JOY: ???</div>`;
-            btn.onclick = () => { applyStats(inflatedCost, choice.h, choice.j, choice.text, choice, endOfYearTransition); };
-            container.appendChild(btn);
-        });
-    }
-
-    function endOfYearTransition() {
-        state.age++; state.turn++; state.inflationMult *= 1.04; 
-        
-        const marketReturn = (Math.random() * ((state.risk==='low'?0.05:(state.risk==='high'?0.25:0.12)) - (state.risk==='low'?0.02:(state.risk==='high'?-0.20:-0.05)))) + (state.risk==='low'?0.02:(state.risk==='high'?-0.20:-0.05));
-        const marketGains = Math.floor(state.money * marketReturn);
-        state.money += marketGains;
-
-        let marketText = marketGains >= 0 ? `+£${currency.format(marketGains)}` : `-£${currency.format(Math.abs(marketGains))}`;
-        let logMsg = `YEAR ${state.turn-1} END. Market: ${marketText}.`;
-
-        if (state.age >= 67) {
-            let pensionThisYear = Math.floor((state.basePension * (state.partner==='couple'?2:1)) * state.inflationMult);
-            state.money += pensionThisYear;
-            logMsg += ` Pension: +£${currency.format(pensionThisYear)}.`;
-        }
-        
-        let baseDrain = 3 + Math.floor(Math.max(0, state.age - 65) / 5); 
-        if (state.trait === 'hedonist') baseDrain += 1;
-        if (state.trait === 'healthnut') baseDrain = Math.max(1, baseDrain - 1);
-        
-        state.health -= baseDrain; 
-
-        processActionLog(logMsg, `AGING PENALTY: -${baseDrain} HP`, 'action', () => {
-            if (state.age < 75) loadWorkChoice(); else loadLifestyleChoice(); 
-        });
     }
 
     function restartWithHindsight(newRate) {
