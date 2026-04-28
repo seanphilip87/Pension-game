@@ -27,7 +27,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100dvh; /* Fixes iOS bottom bar cutoff */
+            min-height: 100dvh; 
             margin: 0;
             padding: 10px;
             box-sizing: border-box;
@@ -70,7 +70,7 @@
             border-radius: 0; 
             box-sizing: border-box;
             font-family: 'VT323', monospace;
-            font-size: 16px; /* 16px prevents iOS auto-zoom on focus */
+            font-size: 16px; 
             -webkit-appearance: none;
         }
         input:focus { outline: none; box-shadow: 0 0 8px var(--neon-blue); }
@@ -255,7 +255,7 @@
         { title: "Bingo Brawl", desc: "A massive fight breaks out at the local Bingo hall.", choices: [ { text: "Join the brawl!", cost: 50, h: -25, j: 35 }, { text: "Flee in a taxi", cost: 20, h: 0, j: -5 }, { text: "Hide under table", cost: 0, h: -5, j: -15 }]},
         { title: "Alpaca Farm", desc: "You have a sudden urge to buy a herd of Alpacas.", choices: [ { text: "Buy the herd", cost: 12000, h: 5, j: 40 }, { text: "Sponsor an Alpaca", cost: 150, h: 0, j: 10 }, { text: "Watch nature docs", cost: 0, h: 0, j: -5 }]},
         { title: "Boiler Breakdown", desc: "It's freezing and the boiler is dead.", choices: [ { text: "Top-tier Heat Pump", cost: 12000, h: 10, j: 5 }, { text: "Standard Replacement", cost: 3000, h: 0, j: 0 }, { text: "Electric Blankets only", cost: 100, h: -25, j: -30 }]},
-        { title: "Lottery Syndicate", desc: "The pub syndicate asks for your annual dues.", choices: [ { text: "Pay up", cost: 520, h: 0, j: 5 }, { text: "Opt out", cost: 0, h: 0, j: -15 }]}, // Fun twist: they won't win.
+        { title: "Lottery Syndicate", desc: "The pub syndicate asks for your annual dues.", choices: [ { text: "Pay up", cost: 520, h: 0, j: 5 }, { text: "Opt out", cost: 0, h: 0, j: -15 }]},
         { title: "Teeth Falling Out", desc: "Your gums are receding fast.", choices: [ { text: "Full Titanium Implants", cost: 18000, h: 15, j: 15 }, { text: "NHS Dentures", cost: 300, h: 0, j: -15 }, { text: "Blender Diet", cost: 50, h: -20, j: -30 }]},
         { title: "World Cruise", desc: "Special offer on a 3-month world cruise.", choices: [ { text: "Luxury Suite", cost: 25000, h: 15, j: 50 }, { text: "Windowless Cabin", cost: 8000, h: -5, j: 20 }, { text: "Stay Home", cost: 0, h: 0, j: -15 }]},
         { title: "The Scammer", desc: "Someone claiming to be from 'Microsoft' calls your landline.", choices: [ { text: "Follow their instructions", cost: 5000, h: -5, j: -30 }, { text: "Argue for an hour", cost: 0, h: 5, j: 10 }, { text: "Hang up", cost: 0, h: 0, j: 0 }]},
@@ -273,12 +273,12 @@
         { title: "Skydiving", desc: "You decide you want an extreme thrill.", choices: [ { text: "Do the jump!", cost: 350, h: -10, j: 45 }, { text: "Chickened out", cost: 0, h: 0, j: -15 }]},
         { title: "Gout", desc: "Too much rich food has caused a gout flare-up.", choices: [ { text: "Private Dietitian & Meds", cost: 600, h: 15, j: -5 }, { text: "Suffer in silence", cost: 0, h: -25, j: -20 }]},
         { title: "Neighbour Dispute", desc: "Neighbour's tree is blocking your light.", choices: [ { text: "Hire Lawyers", cost: 5000, h: -10, j: -10 }, { text: "Chop it down illegally at night", cost: 100, h: 5, j: 30 }, { text: "Do nothing", cost: 0, h: -5, j: -15 }]},
-        { title: "New Hobby", desc: "You want to take up a hobby to stay sharp.", choices: [text: "Buy a Grand Piano", cost: 10000, h: 5, j: 25 }, { text: "Warhammer Miniatures", cost: 2000, h: 0, j: 20 }, { text: "Whittling sticks", cost: 10, h: 0, j: 5 }]},
+        { title: "New Hobby", desc: "You want to take up a hobby to stay sharp.", choices: [ { text: "Buy a Grand Piano", cost: 10000, h: 5, j: 25 }, { text: "Warhammer Miniatures", cost: 2000, h: 0, j: 20 }, { text: "Whittling sticks", cost: 10, h: 0, j: 5 }]},
         { title: "Sciatica", desc: "Shooting pains down your leg.", choices: [ { text: "Acupuncture & Massage plan", cost: 1200, h: 15, j: 5 }, { text: "Lie on the floor for a month", cost: 0, h: -15, j: -25 }]},
         { title: "Historical Society", desc: "You are asked to fund the local museum.", choices: [ { text: "Become a Platinum Patron", cost: 5000, h: 0, j: 20 }, { text: "Give a tenner", cost: 10, h: 0, j: 2 }]},
         { title: "Alien Abduction", desc: "You wake up in a field with missing time.", choices: [ { text: "Full body medical scan", cost: 3000, h: 10, j: -10 }, { text: "Write a sci-fi book about it", cost: 0, h: 0, j: 30 }]},
         { title: "Food Poisoning", desc: "That prawn cocktail was off.", choices: [ { text: "Private hospital drip", cost: 1500, h: 5, j: 0 }, { text: "Ride it out on the toilet", cost: 0, h: -25, j: -15 }]},
-        { title: "Tax Bill", desc: "HMRC says you underpaid tax 5 years ago.", choices: [ { text: "Pay immediately", cost: 3500, h: -5, j: -10 }, { text: "Hire accountant to fight", cost: 1500, h: -10, j: -5 }]}, // Accountant doesn't save you the money, just causes stress.
+        { title: "Tax Bill", desc: "HMRC says you underpaid tax 5 years ago.", choices: [ { text: "Pay immediately", cost: 3500, h: -5, j: -10 }, { text: "Hire accountant to fight", cost: 1500, h: -10, j: -5 }]},
         { title: "Anniversary", desc: "It's a big wedding anniversary.", choices: [ { text: "Diamond jewelry & Paris", cost: 8000, h: 0, j: 40 }, { text: "Card from the petrol station", cost: 5, h: -10, j: -40 }]},
         { title: "Hair Loss", desc: "Your hair is thinning rapidly.", choices: [ { text: "Turkey Hair Transplant", cost: 3500, h: -5, j: 25 }, { text: "Buy a wig", cost: 300, h: 0, j: -5 }, { text: "Shave it all off", cost: 10, h: 0, j: 10 }]},
         { title: "Smartphone Upgrade", desc: "Your old phone apps stopped working.", choices: [ { text: "Buy the Pro Max Ultra", cost: 1500, h: 0, j: 15 }, { text: "Buy a cheap brick phone", cost: 50, h: -5, j: -15 }]},
