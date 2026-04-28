@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Golden Years</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --money: #27ae60;
+            --health: #e74c3c;
+            --happiness: #f39c12;
+            --bg: #ecf0f1;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        #app {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 600px;
+        }
+        h1, h2 { text-align: center; margin-top: 0; }
+        .hidden { display: none !important; }
+        
+        /* Form Styles */
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; font-weight: bold; margin-bottom: 0.5rem; }
+        input { width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;}
+        button {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+        button:hover { background-color: #1a252f; }
+
+        /* Game UI */
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .stat-money { color: var(--money); }
+        .stat-health { color: var(--health); }
+        .stat-happiness { color: var(--happiness); }
+        
+        .event-card {
+            border: 2px solid var(--primary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .step-indicator {
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            color: #7f8c8d;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        .choice-btn {
+            display: block;
+            background-color: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            text-align: left;
+            margin-bottom: 0.5rem;
+            padding: 1rem;
+        }
+        .choice-btn:hover { background-color: var(--bg); }
+        .choice-effects { font-size: 0.85rem; color: #7f8c8d; margin-top: 5px;}
+        
+        .turn-info { text-align: center; font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem;}
+        .log { font-size: 0.9rem; color: #555; text-align: center; margin-bottom: 1.5rem; min-height: 20px; font-style: italic;}
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div id="setup-screen">
+        <h1>The Golden Years</h1>
+        <p>Enter your current details to project your retirement pot. Can you survive your own savings?</p>
+        
+        <div class="form-group">
+            <label>Current Age</label>
+            <input type="number" id="inp-age" value="30">
+        </div>
+        <div class="form-group">
+            <label>Target Retirement Age</label>
+            <input type="number" id="inp-retire-age" value="67">
+        </div>
+        <div class="form-group">
+            <label>Current Pension Pot (£)</label>
+            <input type="number" id="inp-pot" value="15000">
+        </div>
+        <div class="form-group">
+            <label>Current Annual Salary (£)</label>
+            <input type="number" id="inp-salary" value="40000">
+        </div>
+        
+        <input type="hidden" id="inp-contribution" value="0.08"> 
+
+        <button onclick="calculateAndStart()">Project & Start Game</button>
+        <p id="hindsight-msg" style="text-align:center; color: var(--money); font-weight: bold;"></p>
+    </div>
+
+    <div id="game-screen" class="hidden">
+        <div class="turn-info">
+            Age: <span id="ui-age"></span> | Year: <span id="ui-year">1</span>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-money">💰 £<span id="ui-money"></span></div>
+            <div class="stat-health">❤️ <span id="ui-health"></span>/100</div>
+            <div class="stat-happiness">😊 <span id="ui-happiness"></span>/100</div>
+        </div>
+
+        <div class="log" id="ui-log"></div>
+
+        <div class="event-card">
+            <div class="step-indicator" id="event-step">Step 1 of 2</div>
+            <h2 id="event-title">Title</h2>
+            <p id="event-desc">Description</p>
+            <div id="choices-container">
+                </div>
+        </div>
+    </div>
+
+    <div id="game-over-screen" class="hidden">
+        <h1>Game Over</h1>
+        <h2 id="end-reason" style="color: var(--health);"></h2>
+        <p>You made it to age: <strong id="end-age"></strong></p>
+        <p>Final Happiness Score: <strong id="end-happiness"></strong></p>
+        
+        <div style="background: var(--bg); padding: 1rem; border-radius: 8px; margin-top: 2rem;">
+            <h3>The Hindsight Loop</h3>
+            <p>If you had increased your pension contributions during your working years, you might have had an easier time.</p>
+            <button onclick="restartWithHindsight(0.12)">Try again with 12% contribution</button>
+            <button onclick="restartWithHindsight(0.15)">Try again with 15% contribution</button>
+            <button style="background: #95a5a6;" onclick="resetToStart()">Back to Start</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Game State
+    let state = {
+        age: 0,
+        money: 0,
+        health: 100,
+        happiness: 100,
+        turn: 1,
+        inflationMult: 1.0,
+        basePension: 11500
+    };
+
+    const currency = new Intl.NumberFormat('en-GB', { maximumFractionDigits: 0 });
+
+    const scenarios = [
+        {
+            title: "The Leaky Roof",
+            desc: "Winter is coming and the roof has sprung a serious leak.",
+            choices: [
+                { text: "Hire top-rated roofers for a full repair", cost: 8000, health: 0, happ: 5 },
+                { text: "Get a cheap patch job", cost: 2000, health: -5, happ: -10 },
+                { text: "Put buckets down and ignore it", cost: 0, health: -15, happ: -20 }
+            ]
+        },
+        {
+            title: "Aching Joints",
+            desc: "Your knees are making it hard to walk or enjoy hobbies.",
+            choices: [
+                { text: "Pay for private knee replacement", cost: 15000, health: 20, happ: 10 },
+                { text: "Wait on the NHS list (Takes 2 years)", cost: 0, health: -15, happ: -10 },
+                { text: "Buy painkillers and stay on the sofa", cost: 100, health: -20, happ: -15 }
+            ]
+        },
+        {
+            title: "Grandchild's Wedding",
+            desc: "Your favorite grandchild is getting married abroad.",
+            choices: [
+                { text: "Pay for flights, hotel, and a generous gift", cost: 5000, health: -5, happ: 25 },
+                { text: "Send a modest gift and watch via Zoom", cost: 500, health: 0, happ: -15 }
+            ]
+        },
+        {
+            title: "Dental Emergency",
+            desc: "You've cracked a tooth and need significant crown work.",
+            choices: [
+                { text: "Pay for premium private implants", cost: 4000, health: 10, happ: 5 },
+                { text: "Standard NHS Band 3 Treatment", cost: 350, health: 5, happ: -5 },
+                { text: "Have it extracted and live with a gap", cost: 50, health: -5, happ: -15 }
+            ]
+        }
+    ];
+
+    function calculateAndStart() {
+        const currentAge = parseInt(document.getElementById('inp-age').value);
+        const retireAge = parseInt(document.getElementById('inp-retire-age').value);
+        let pot = parseFloat(document.getElementById('inp-pot').value);
+        let salary = parseFloat(document.getElementById('inp-salary').value);
+        const contributionRate = parseFloat(document.getElementById('inp-contribution').value);
+        
+        const salaryGrowth = 1.03;
+        const potGrowth = 1.05;
+        const yearsToWork = retireAge - currentAge;
+
+        for (let i = 0; i < yearsToWork; i++) {
+            pot = (pot * potGrowth) + (salary * contributionRate);
+            salary = salary * salaryGrowth;
+        }
+
+        // Initialize Game State
+        state.age = retireAge;
+        state.health = 100;
+        state.happiness = 100;
+        state.turn = 1;
+        state.inflationMult = 1.0; 
+
+        // Give them Year 1 State Pension immediately
+        state.money = Math.floor(pot) + state.basePension;
+        
+        document.getElementById('setup-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.remove('hidden');
+        
+        document.getElementById('ui-log').innerText = `Retirement begins! Your pension pot finished at £${currency.format(pot)}. State pension adds £11,500 for Year 1.`;
+
+        updateUI();
+        loadLifestyleChoice(); // Start the 2-step loop
+    }
+
+    function updateUI() {
+        document.getElementById('ui-age').innerText = state.age;
+        document.getElementById('ui-year').innerText = state.turn;
+        document.getElementById('ui-money').innerText = currency.format(state.money);
+        document.getElementById('ui-health').innerText = state.health;
+        document.getElementById('ui-happiness').innerText = state.happiness;
+    }
+
+    function applyStats(cost, healthEff, happEff) {
+        state.money -= cost;
+        state.health += healthEff;
+        state.happiness += happEff;
+
+        if (state.health > 100) state.health = 100;
+        if (state.happiness > 100) state.happiness = 100;
+
+        updateUI();
+    }
+
+    // Returns true if game over occurred
+    function checkGameOver() {
+        let reason = "";
+        if (state.money <= 0) reason = "You ran out of money!";
+        else if (state.health <= 0) reason = "Your health failed you!";
+        else if (state.happiness <= 0) reason = "You died of a broken heart / utter boredom!";
+
+        if (reason !== "") {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('game-over-screen').classList.remove('hidden');
+            document.getElementById('end-reason').innerText = reason;
+            document.getElementById('end-age').innerText = state.age;
+            document.getElementById('end-happiness').innerText = state.happiness > 0 ? state.happiness : 0;
+            return true;
+        }
+        return false;
+    }
+
+    // STEP 1: Choose baseline living costs
+    function loadLifestyleChoice() {
+        document.getElementById('event-step').innerText = "Step 1 of 2: Cost of Living";
+        document.getElementById('event-title').innerText = "Annual Lifestyle Choice";
+        document.getElementById('event-desc').innerText = "How do you want to live this year? Remember, inflation makes everything more expensive over time.";
+
+        const container = document.getElementById('choices-container');
+        container.innerHTML = ''; 
+
+        const lifestyles = [
+            { text: "Frugal (Basic groceries, strict heating, no holidays)", cost: 12000, health: -8, happ: -12 },
+            { text: "Comfortable (Standard heating, occasional meals out)", cost: 22000, health: 0, happ: 0 },
+            { text: "Luxurious (Premium groceries, regular holidays, optimal heating)", cost: 38000, health: 5, happ: 8 }
+        ];
+
+        lifestyles.forEach(choice => {
+            const inflatedCost = Math.floor(choice.cost * state.inflationMult);
+            const btn = document.createElement('button');
+            btn.className = 'choice-btn';
+            btn.innerHTML = `
+                <strong>${choice.text}</strong>
+                <div class="choice-effects">
+                    Cost: £${currency.format(inflatedCost)} | Health: ${choice.health > 0 ? '+'+choice.health : choice.health} | Happiness: ${choice.happ > 0 ? '+'+choice.happ : choice.happ}
+                </div>
+            `;
+            btn.onclick = () => {
+                applyStats(inflatedCost, choice.health, choice.happ);
+                if (!checkGameOver()) {
+                    loadScenario(); // Proceed to Step 2
+                }
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    // STEP 2: Handle the random unexpected event
+    function loadScenario() {
+        document.getElementById('event-step').innerText = "Step 2 of 2: Unexpected Event";
+        const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+        
+        document.getElementById('event-title').innerText = scenario.title;
+        document.getElementById('event-desc').innerText = scenario.desc;
+        
+        const container = document.getElementById('choices-container');
+        container.innerHTML = ''; 
+
+        scenario.choices.forEach(choice => {
+            const inflatedCost = Math.floor(choice.cost * state.inflationMult);
+            const btn = document.createElement('button');
+            btn.className = 'choice-btn';
+            btn.innerHTML = `
+                <strong>${choice.text}</strong>
+                <div class="choice-effects">
+                    Cost: £${currency.format(inflatedCost)} | Health: ${choice.health > 0 ? '+'+choice.health : choice.health} | Happiness: ${choice.happ > 0 ? '+'+choice.happ : choice.happ}
+                </div>
+            `;
+            btn.onclick = () => {
+                applyStats(inflatedCost, choice.health, choice.happ);
+                if (!checkGameOver()) {
+                    endOfYearTransition(); // Proceed to next year
+                }
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    // TRANSITION: Advance to the next year
+    function endOfYearTransition() {
+        state.age++;
+        state.turn++;
+        
+        // 3% annual inflation
+        state.inflationMult *= 1.03; 
+        
+        // State Pension drip-feed
+        const pensionThisYear = Math.floor(state.basePension * state.inflationMult);
+        state.money += pensionThisYear;
+
+        // General decline of aging
+        state.health -= 3; 
+
+        document.getElementById('ui-log').innerText = `You survived Year ${state.turn - 1}! State pension added £${currency.format(pensionThisYear)} for the year ahead. Age took a toll (-3 Health).`;
+
+        updateUI();
+        if(!checkGameOver()) {
+            loadLifestyleChoice(); // Loop back to Step 1
+        }
+    }
+
+    function restartWithHindsight(newRate) {
+        document.getElementById('inp-contribution').value = newRate;
+        document.getElementById('hindsight-msg').innerText = `Hindsight active: Pension contribution increased to ${newRate * 100}% of salary.`;
+        
+        document.getElementById('game-over-screen').classList.add('hidden');
+        document.getElementById('setup-screen').classList.remove('hidden');
+    }
+
+    function resetToStart() {
+        document.getElementById('inp-contribution').value = 0.08;
+        document.getElementById('hindsight-msg').innerText = "";
+        document.getElementById('game-over-screen').classList.add('hidden');
+        document.getElementById('setup-screen').classList.remove('hidden');
+    }
+</script>
+
+</body>
+</html>
