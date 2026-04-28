@@ -8,7 +8,6 @@
     <style>
         :root {
             --bg-color: #0d0221;
-            --grid-color: #ff007f;
             --neon-blue: #0ff;
             --neon-pink: #ff00aa;
             --neon-green: #39ff14;
@@ -31,28 +30,6 @@
             margin: 0;
             padding: 10px;
             box-sizing: border-box;
-            overflow: hidden;
-        }
-
-        /* CRT Scanline & Flicker Effects */
-        body::after {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-            background-size: 100% 4px;
-            z-index: 100;
-            pointer-events: none;
-        }
-        body::before {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%);
-            z-index: 101;
-            pointer-events: none;
         }
 
         #app {
@@ -66,8 +43,6 @@
             max-height: 95dvh;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            position: relative;
-            z-index: 10;
         }
 
         h1, h2, h3 { 
@@ -83,21 +58,23 @@
         .hidden { display: none !important; }
         
         .form-group { margin-bottom: 1rem; }
-        label { display: block; font-size: 1.2rem; color: var(--neon-blue); margin-bottom: 0.3rem; text-shadow: 0 0 3px var(--neon-blue);}
+        label { display: block; font-size: 1.3rem; color: var(--neon-blue); margin-bottom: 0.3rem;}
         input, select { 
             width: 100%; 
-            padding: 0.5rem; 
+            padding: 0.6rem; 
             background: rgba(0, 255, 255, 0.05);
             border: 1px solid var(--neon-blue); 
             color: var(--neon-green);
             border-radius: 0; 
             box-sizing: border-box;
             font-family: 'VT323', monospace;
-            font-size: 16px; 
+            font-size: 18px; 
             -webkit-appearance: none;
         }
         select option { background: var(--bg-color); color: var(--neon-green); }
         input:focus, select:focus { outline: none; box-shadow: 0 0 8px var(--neon-blue); background: rgba(0, 255, 255, 0.1);}
+        
+        .warning-text { font-size: 1rem; color: var(--neon-pink); display: block; margin-top: 4px; }
 
         button {
             width: 100%;
@@ -113,14 +90,12 @@
             margin-top: 10px;
             -webkit-appearance: none;
             touch-action: manipulation;
-            text-shadow: 0 0 4px var(--neon-pink);
             box-shadow: 0 0 5px var(--neon-pink) inset;
         }
         button:hover, button:active { 
             background-color: var(--neon-pink); 
             color: var(--bg-color);
             box-shadow: 0 0 20px var(--neon-pink);
-            text-shadow: none;
         }
 
         .stats {
@@ -129,16 +104,16 @@
             margin-bottom: 0.5rem;
             padding: 0.5rem;
             border-bottom: 1px dashed var(--neon-blue);
-            font-size: 1.3rem;
+            font-size: 1.4rem;
         }
-        .stat-money { color: var(--neon-green); text-shadow: 0 0 4px var(--neon-green);}
-        .stat-health { color: var(--neon-red); text-shadow: 0 0 4px var(--neon-red);}
-        .stat-happiness { color: var(--neon-pink); text-shadow: 0 0 4px var(--neon-pink);}
+        .stat-money { color: var(--neon-green); }
+        .stat-health { color: var(--neon-red); }
+        .stat-happiness { color: var(--neon-pink); }
         
         .reality-check {
             text-align: center;
-            font-size: 1rem;
-            color: #888;
+            font-size: 1.1rem;
+            color: #aaa;
             margin-bottom: 1rem;
             letter-spacing: 1px;
         }
@@ -148,29 +123,27 @@
             padding: 1rem;
             background: rgba(255, 0, 170, 0.05);
             margin-bottom: 1rem;
-            box-shadow: 0 0 10px rgba(255,0,170,0.2) inset;
         }
-        .step-indicator { font-size: 1.2rem; color: var(--neon-blue); margin-bottom: 0.5rem; text-align: center; text-shadow: 0 0 3px var(--neon-blue);}
-        .event-desc { font-size: 1.3rem; margin-bottom: 1.5rem; text-align: center; }
+        .step-indicator { font-size: 1.3rem; color: var(--neon-blue); margin-bottom: 0.5rem; text-align: center; font-weight: bold;}
+        .event-desc { font-size: 1.4rem; margin-bottom: 1.5rem; text-align: center; line-height: 1.3;}
         
         .choice-btn {
             display: block;
-            background-color: rgba(0,0,0,0.6);
+            background-color: rgba(0,0,0,0.8);
             color: var(--text-main);
             border: 1px solid var(--neon-blue);
             text-align: left;
             margin-bottom: 0.8rem;
-            padding: 0.8rem;
-            font-size: 1.2rem;
+            padding: 1rem;
+            font-size: 1.3rem;
             box-shadow: none;
-            text-shadow: none;
         }
         .choice-btn strong { display: block; margin-bottom: 5px; color: var(--neon-blue); }
-        .choice-btn:hover, .choice-btn:active { background-color: var(--neon-blue); color: #000; box-shadow: 0 0 15px var(--neon-blue);}
+        .choice-btn:hover, .choice-btn:active { background-color: var(--neon-blue); color: #000;}
         .choice-btn:hover strong { color: #000; }
         .choice-effects { font-size: 1.1rem; color: var(--neon-green); }
         
-        .turn-info { text-align: center; font-size: 1.5rem; color: var(--neon-blue); margin-bottom: 0.5rem; text-shadow: 0 0 4px var(--neon-blue);}
+        .turn-info { text-align: center; font-size: 1.6rem; color: var(--neon-blue); margin-bottom: 0.5rem;}
         
         .log-container {
             border: 1px solid var(--neon-green);
@@ -178,10 +151,9 @@
             padding: 0.5rem;
             margin-bottom: 0.5rem;
             min-height: 40px;
-            box-shadow: 0 0 5px var(--neon-green) inset;
         }
-        .log { font-size: 1.2rem; color: var(--neon-green); text-align: center; text-shadow: 0 0 3px var(--neon-green);}
-        .log-alert { color: var(--neon-pink); font-style: italic; display: block; margin-top: 5px; text-shadow: 0 0 3px var(--neon-pink);}
+        .log { font-size: 1.3rem; color: var(--neon-green); text-align: center; }
+        .log-alert { color: var(--neon-pink); font-style: italic; display: block; margin-top: 5px; text-align: center;}
 
         /* Achievements */
         .achievement {
@@ -191,10 +163,8 @@
             padding: 1rem;
             text-align: center;
             margin-top: 1rem;
-            text-shadow: 0 0 5px #ffd700;
-            box-shadow: 0 0 10px #ffd700 inset;
         }
-        .achievement h3 { color: #ffd700; text-shadow: 0 0 10px #ffd700; margin-bottom: 0.5rem; font-size: 1.8rem;}
+        .achievement h3 { color: #ffd700; margin-bottom: 0.5rem; font-size: 1.8rem;}
 
     </style>
 </head>
@@ -203,7 +173,7 @@
 <div id="app">
     <div id="setup-screen">
         <h1>Golden Years: 2084</h1>
-        <p style="text-align:center; font-size:1.2rem; color: var(--neon-blue);">System Booting... Enter financial parameters.</p>
+        <p style="text-align:center; font-size:1.3rem; color: var(--neon-blue);">System Booting... Enter financial parameters.</p>
         
         <div class="form-group">
             <label>Current Age</label>
@@ -214,12 +184,24 @@
             <input type="number" id="inp-retire-age" value="67">
         </div>
         <div class="form-group">
+            <label>Relationship Status</label>
+            <select id="inp-partner">
+                <option value="single">Single (Standard Costs, 1x Pension)</option>
+                <option value="couple">Couple (1.5x Costs, 2x Pension)</option>
+            </select>
+        </div>
+        <div class="form-group">
             <label>Current Pension Pot (£)</label>
             <input type="number" id="inp-pot" value="15000">
         </div>
         <div class="form-group">
             <label>Current Salary (£)</label>
             <input type="number" id="inp-salary" value="40000">
+        </div>
+        <div class="form-group">
+            <label>Pension Contribution (%)</label>
+            <input type="number" id="inp-contribution" value="8" min="0" max="100">
+            <span class="warning-text">Warning: Contributions over 8% will lower your starting Joy score (Sacrificing your youth!)</span>
         </div>
         <div class="form-group">
             <label>Retirement Investment Strategy</label>
@@ -229,8 +211,6 @@
                 <option value="high">High Risk (Crypto/Stocks: -20% to +25%)</option>
             </select>
         </div>
-        
-        <input type="hidden" id="inp-contribution" value="0.08"> 
 
         <button onclick="calculateAndStart()">INITIALIZE SIMULATION</button>
         <p id="hindsight-msg" style="text-align:center; color: var(--neon-green); font-size: 1.2rem;"></p>
@@ -264,30 +244,30 @@
     </div>
 
     <div id="game-over-screen" class="hidden">
-        <h1 style="color:var(--neon-red); text-shadow: 0 0 10px var(--neon-red);">SIMULATION TERMINATED</h1>
+        <h1 style="color:var(--neon-red);">SIMULATION TERMINATED</h1>
         <h2 id="end-reason" style="color: var(--neon-red); font-size: 2rem;"></h2>
         
         <div id="achievement-box" class="achievement hidden">
             <h3>ACHIEVEMENT UNLOCKED</h3>
             <strong id="achieve-title" style="font-size: 1.5rem;"></strong>
-            <p id="achieve-desc" style="font-size: 1.2rem; color: #e0e0e0; text-shadow:none;"></p>
+            <p id="achieve-desc" style="font-size: 1.3rem; color: #e0e0e0;"></p>
         </div>
 
-        <p style="font-size: 1.5rem; text-align:center; margin-top: 1rem;">Survival Age: <strong id="end-age" style="color:var(--neon-blue);"></strong></p>
-        <p style="font-size: 1.5rem; text-align:center;">Final Joy Score: <strong id="end-happiness" style="color:var(--neon-pink);"></strong></p>
+        <p style="font-size: 1.6rem; text-align:center; margin-top: 1rem;">Survival Age: <strong id="end-age" style="color:var(--neon-blue);"></strong></p>
+        <p style="font-size: 1.6rem; text-align:center;">Final Joy Score: <strong id="end-happiness" style="color:var(--neon-pink);"></strong></p>
         
         <div style="border: 1px dashed var(--neon-blue); padding: 1rem; margin-top: 1.5rem;">
-            <h3 style="color:var(--neon-green); font-size: 1.5rem;">TIME TRAVEL HINDSIGHT</h3>
-            <p style="font-size:1.1rem; text-align:center; color: #aaa;">Increase your past contributions to alter your future.</p>
-            <button onclick="restartWithHindsight(0.12)" style="font-size: 1.1rem; border-color: var(--neon-blue); color: var(--neon-blue);">REBOOT W/ 12% CONTRIBUTION</button>
-            <button onclick="restartWithHindsight(0.15)" style="font-size: 1.1rem; border-color: var(--neon-green); color: var(--neon-green);">REBOOT W/ 15% CONTRIBUTION</button>
-            <button onclick="resetToStart()" style="font-size: 1.1rem; border-color: #fff; color: #fff; box-shadow:none;">RETURN TO MAIN MENU</button>
+            <h3 style="color:var(--neon-green); font-size: 1.6rem;">TIME TRAVEL HINDSIGHT</h3>
+            <p style="font-size:1.2rem; text-align:center; color: #aaa;">Increase your past contributions to alter your future.</p>
+            <button onclick="restartWithHindsight(12)" style="font-size: 1.2rem; border-color: var(--neon-blue); color: var(--neon-blue);">REBOOT W/ 12% CONTRIBUTION</button>
+            <button onclick="restartWithHindsight(15)" style="font-size: 1.2rem; border-color: var(--neon-green); color: var(--neon-green);">REBOOT W/ 15% CONTRIBUTION</button>
+            <button onclick="resetToStart()" style="font-size: 1.2rem; border-color: #fff; color: #fff; box-shadow:none;">RETURN TO MAIN MENU</button>
         </div>
     </div>
 </div>
 
 <script>
-    // --- AUDIO ENGINE (Web Audio API Synthesizer) ---
+    // --- AUDIO ENGINE ---
     let audioCtx;
     function initAudio() {
         if (!audioCtx) {
@@ -320,7 +300,7 @@
     let state = {
         age: 0, money: 0, health: 100, happiness: 100,
         turn: 1, inflationMult: 1.0, basePension: 11500,
-        risk: 'med', baseMilkPrice: 1.50
+        risk: 'med', partner: 'single', baseMilkPrice: 1.50
     };
 
     let activeScenarios = []; 
@@ -336,36 +316,25 @@
         { title: "Bingo Brawl", desc: "A massive fight breaks out at the local Bingo hall.", choices: [ { text: "Join the brawl!", cost: 50, h: -25, j: 35 }, { text: "Flee in a taxi", cost: 20, h: 0, j: -5 }, { text: "Hide under table", cost: 0, h: -5, j: -15 }]},
         { title: "Alpaca Farm", desc: "You have a sudden urge to buy a herd of Alpacas.", choices: [ { text: "Buy the herd", cost: 12000, h: 5, j: 40 }, { text: "Sponsor an Alpaca", cost: 150, h: 0, j: 10 }, { text: "Watch nature docs", cost: 0, h: 0, j: -5 }]},
         { title: "Boiler Breakdown", desc: "It's freezing and the boiler is dead.", choices: [ { text: "Top-tier Heat Pump", cost: 12000, h: 10, j: 5 }, { text: "Standard Replacement", cost: 3000, h: 0, j: 0 }, { text: "Electric Blankets only", cost: 100, h: -25, j: -30 }]},
-        { title: "Lottery Syndicate", desc: "The pub syndicate asks for your annual dues.", choices: [ { text: "Pay up", cost: 520, h: 0, j: 5 }, { text: "Opt out", cost: 0, h: 0, j: -15 }]},
         { title: "Teeth Falling Out", desc: "Your gums are receding fast.", choices: [ { text: "Full Titanium Implants", cost: 18000, h: 15, j: 15 }, { text: "NHS Dentures", cost: 300, h: 0, j: -15 }, { text: "Blender Diet", cost: 50, h: -20, j: -30 }]},
         { title: "World Cruise", desc: "Special offer on a 3-month world cruise.", choices: [ { text: "Luxury Suite", cost: 25000, h: 15, j: 50 }, { text: "Windowless Cabin", cost: 8000, h: -5, j: 20 }, { text: "Stay Home", cost: 0, h: 0, j: -15 }]},
         { title: "The Scammer", desc: "Someone claiming to be from 'Microsoft' calls your landline.", choices: [ { text: "Follow their instructions", cost: 5000, h: -5, j: -30 }, { text: "Argue for an hour", cost: 0, h: 5, j: 10 }, { text: "Hang up", cost: 0, h: 0, j: 0 }]},
         { title: "Pet Passes Away", desc: "Your loyal dog has gone to the great park in the sky.", choices: [ { text: "Elaborate pet funeral & therapy", cost: 2000, h: 0, j: -10 }, { text: "Standard burial", cost: 200, h: -5, j: -25 }]},
         { title: "New Puppy", desc: "You are lonely. Do you get a puppy?", choices: [ { text: "Pedigree Golden Retriever", cost: 2500, h: 10, j: 40 }, { text: "Rescue Dog", cost: 200, h: 5, j: 30 }, { text: "No, too much work", cost: 0, h: 0, j: -15 }]},
         { title: "Gardening Accident", desc: "You threw your back out lifting compost.", choices: [ { text: "Private Physiotherapist", cost: 1000, h: 10, j: 0 }, { text: "Bed rest for a month", cost: 0, h: -15, j: -20 }]},
-        { title: "Speeding Ticket", desc: "Caught doing 45 in a 30 zone.", choices: [ { text: "Pay fine & take points", cost: 100, h: 0, j: -10 }, { text: "Hire lawyer to fight it", cost: 1500, h: 0, j: 5 }]},
-        { title: "Timeshare Pitch", desc: "Invited to a 'free' lunch if you listen to a pitch.", choices: [ { text: "Buy the Timeshare!", cost: 15000, h: 0, j: -20 }, { text: "Eat food and run", cost: 0, h: 0, j: 10 }]},
         { title: "Flooded Kitchen", desc: "A pipe burst overnight.", choices: [ { text: "Designer Kitchen refit", cost: 12000, h: 0, j: 20 }, { text: "Basic repairs", cost: 1500, h: -5, j: -5 }, { text: "Mop it up and live with rot", cost: 0, h: -20, j: -20 }]},
         { title: "Cult Invitation", desc: "A charismatic neighbor invites you to join their 'wellness' group.", choices: [ { text: "Donate your savings & join", cost: 30000, h: 20, j: 50 }, { text: "Go for the free snacks", cost: 0, h: 5, j: 5 }, { text: "Call the police", cost: 0, h: 0, j: -5 }]},
         { title: "Hearing Loss", desc: "The TV keeps getting quieter.", choices: [ { text: "Premium invisible hearing aids", cost: 4000, h: 10, j: 15 }, { text: "NHS standard aids", cost: 0, h: 5, j: -5 }, { text: "Just shout at everyone", cost: 0, h: -10, j: -15 }]},
         { title: "Cataracts", desc: "Vision is getting extremely blurry.", choices: [ { text: "Private Laser Surgery", cost: 6000, h: 20, j: 20 }, { text: "Wait 18 months for NHS", cost: 0, h: -15, j: -15 }]},
-        { title: "Identity Theft", desc: "Someone cloned your card in Benidorm.", choices: [ { text: "Pay premium recovery service", cost: 500, h: 0, j: 0 }, { text: "Sort it yourself (Stressful)", cost: 0, h: -10, j: -15 }]},
         { title: "Long Lost Relative", desc: "A 'cousin' asks for a loan.", choices: [ { text: "Give them the money", cost: 5000, h: 0, j: -20 }, { text: "Tell them to get lost", cost: 0, h: 0, j: 5 }]},
-        { title: "Skydiving", desc: "You decide you want an extreme thrill.", choices: [ { text: "Do the jump!", cost: 350, h: -10, j: 45 }, { text: "Chickened out", cost: 0, h: 0, j: -15 }]},
         { title: "Gout", desc: "Too much rich food has caused a gout flare-up.", choices: [ { text: "Private Dietitian & Meds", cost: 600, h: 15, j: -5 }, { text: "Suffer in silence", cost: 0, h: -25, j: -20 }]},
         { title: "Neighbour Dispute", desc: "Neighbour's tree is blocking your light.", choices: [ { text: "Hire Lawyers", cost: 5000, h: -10, j: -10 }, { text: "Chop it down illegally at night", cost: 100, h: 5, j: 30 }, { text: "Do nothing", cost: 0, h: -5, j: -15 }]},
-        { title: "New Hobby", desc: "You want to take up a hobby to stay sharp.", choices: [ { text: "Buy a Grand Piano", cost: 10000, h: 5, j: 25 }, { text: "Warhammer Miniatures", cost: 2000, h: 0, j: 20 }, { text: "Whittling sticks", cost: 10, h: 0, j: 5 }]},
         { title: "Sciatica", desc: "Shooting pains down your leg.", choices: [ { text: "Acupuncture & Massage plan", cost: 1200, h: 15, j: 5 }, { text: "Lie on the floor for a month", cost: 0, h: -15, j: -25 }]},
-        { title: "Historical Society", desc: "You are asked to fund the local museum.", choices: [ { text: "Become a Platinum Patron", cost: 5000, h: 0, j: 20 }, { text: "Give a tenner", cost: 10, h: 0, j: 2 }]},
         { title: "Alien Abduction", desc: "You wake up in a field with missing time.", choices: [ { text: "Full body medical scan", cost: 3000, h: 10, j: -10 }, { text: "Write a sci-fi book about it", cost: 0, h: 0, j: 30 }]},
         { title: "Food Poisoning", desc: "That prawn cocktail was off.", choices: [ { text: "Private hospital drip", cost: 1500, h: 5, j: 0 }, { text: "Ride it out on the toilet", cost: 0, h: -25, j: -15 }]},
         { title: "Tax Bill", desc: "HMRC says you underpaid tax 5 years ago.", choices: [ { text: "Pay immediately", cost: 3500, h: -5, j: -10 }, { text: "Hire accountant to fight", cost: 1500, h: -10, j: -5 }]},
-        { title: "Anniversary", desc: "It's a big wedding anniversary.", choices: [ { text: "Diamond jewelry & Paris", cost: 8000, h: 0, j: 40 }, { text: "Card from the petrol station", cost: 5, h: -10, j: -40 }]},
-        { title: "Hair Loss", desc: "Your hair is thinning rapidly.", choices: [ { text: "Turkey Hair Transplant", cost: 3500, h: -5, j: 25 }, { text: "Buy a wig", cost: 300, h: 0, j: -5 }, { text: "Shave it all off", cost: 10, h: 0, j: 10 }]},
-        { title: "Smartphone Upgrade", desc: "Your old phone apps stopped working.", choices: [ { text: "Buy the Pro Max Ultra", cost: 1500, h: 0, j: 15 }, { text: "Buy a cheap brick phone", cost: 50, h: -5, j: -15 }]},
+        { title: "Anniversary", desc: "It's a big anniversary.", choices: [ { text: "Diamond jewelry & Paris", cost: 8000, h: 0, j: 40 }, { text: "Card from the petrol station", cost: 5, h: -10, j: -40 }]},
         { title: "Grown Kids Move Back", desc: "Your 40-year-old child needs to move back in.", choices: [ { text: "Pay their rent elsewhere", cost: 12000, h: 10, j: 20 }, { text: "Let them move in", cost: 3000, h: -20, j: -20 }, { text: "Change the locks", cost: 150, h: -10, j: -10 }]},
-        { title: "Local Election", desc: "You run for local council.", choices: [ { text: "Fund a massive campaign", cost: 5000, h: -15, j: 30 }, { text: "Just print flyers", cost: 200, h: -5, j: 5 }]},
-        { title: "Vitamin Scams", desc: "An ad promises 'eternal energy' pills.", choices: [ { text: "Buy a 5-year supply", cost: 2500, h: -10, j: -5 }, { text: "Eat an apple instead", cost: 2, h: 5, j: 0 }]},
         { title: "Drafty Windows", desc: "The cold wind is blowing right through.", choices: [ { text: "Full Triple Glazing", cost: 10000, h: 10, j: 10 }, { text: "Tape bubble wrap to glass", cost: 15, h: -15, j: -20 }]}
     ];
 
@@ -377,7 +346,11 @@
         const retireAge = parseInt(document.getElementById('inp-retire-age').value);
         let pot = parseFloat(document.getElementById('inp-pot').value);
         let salary = parseFloat(document.getElementById('inp-salary').value);
-        const contributionRate = parseFloat(document.getElementById('inp-contribution').value);
+        
+        const contPct = parseFloat(document.getElementById('inp-contribution').value);
+        const contributionRate = contPct / 100;
+        
+        state.partner = document.getElementById('inp-partner').value;
         state.risk = document.getElementById('inp-risk').value;
         
         const salaryGrowth = 1.03;
@@ -389,23 +362,43 @@
             salary = salary * salaryGrowth;
         }
 
+        // Calculate starting joy penalty for high savers
+        let startJoy = 100;
+        if (contPct > 8) {
+            startJoy = 100 - ((contPct - 8) * 4); // -4 Joy per extra percent over 8%
+        }
+
         activeScenarios = [...masterScenarios].sort(() => 0.5 - Math.random());
 
         state.age = retireAge;
         state.health = 100;
-        state.happiness = 100;
+        state.happiness = Math.max(10, Math.floor(startJoy)); 
         state.turn = 1;
         state.inflationMult = 1.0; 
-        state.money = Math.floor(pot) + state.basePension;
+        
+        // No pension on day 1 unless they retire at 67+
+        state.money = Math.floor(pot);
+        let logMsg = `Pot reached £${currency.format(pot)}. Joy initialized at ${state.happiness}%.`;
+
+        if (state.age >= 67) {
+            let pensionMult = state.partner === 'couple' ? 2 : 1;
+            let initialPension = state.basePension * pensionMult;
+            state.money += initialPension;
+            logMsg += ` State pension added £${currency.format(initialPension)}.`;
+        } else {
+            logMsg += ` Too young for State Pension!`;
+        }
         
         document.getElementById('setup-screen').classList.add('hidden');
         document.getElementById('game-screen').classList.remove('hidden');
         
-        document.getElementById('ui-log').innerText = `Pot reached £${currency.format(pot)}. State pension adds £11,500.`;
+        document.getElementById('ui-log').innerText = logMsg;
         document.getElementById('ui-log-alert').innerText = "Survive as long as possible.";
 
         updateUI();
-        loadLifestyleChoice(); 
+        
+        if (state.age < 75) loadWorkChoice();
+        else loadLifestyleChoice(); 
     }
 
     function updateUI() {
@@ -429,11 +422,12 @@
 
         let hText = healthEff >= 0 ? `+${healthEff} HP` : `${healthEff} HP`;
         let jText = happEff >= 0 ? `+${happEff} JOY` : `${happEff} JOY`;
+        let costText = cost >= 0 ? `-£${currency.format(cost)}` : `+£${currency.format(Math.abs(cost))}`;
         
-        document.getElementById('ui-log').innerText = `Paid £${currency.format(cost)} for ${actionName}.`;
+        document.getElementById('ui-log').innerText = `Action: ${actionName} (${costText}).`;
         document.getElementById('ui-log-alert').innerText = `IMPACT: ${hText} | ${jText}`;
 
-        if(healthEff < 0 || happEff < -10) sfxDamage();
+        if(healthEff < 0 || happEff <= -10) sfxDamage();
         else sfxAction();
 
         updateUI();
@@ -456,7 +450,7 @@
             }
         } else if (state.health <= 0) {
             reason = "BIOLOGICAL FAILURE";
-            if (state.money > 100000 && state.happiness < 20) {
+            if (state.money > 100000 && state.happiness < 30) {
                 achieveTitle = "THE SCROOGE";
                 achieveDesc = "Richest person in the graveyard. Nobody came to the funeral.";
             }
@@ -489,8 +483,32 @@
         return false;
     }
 
+    // PHASE 0: Un-retirement
+    function loadWorkChoice() {
+        document.getElementById('event-step').innerText = "PHASE 0: UN-RETIREMENT";
+        document.getElementById('event-title').innerText = "PART-TIME OPPORTUNITY";
+        document.getElementById('event-desc').innerText = "You are still relatively young. Do you want to take a part-time job to boost your funds?";
+
+        const container = document.getElementById('choices-container');
+        container.innerHTML = ''; 
+        
+        const workIncome = Math.floor(-12000 * state.inflationMult); // Negative cost = income
+
+        const btnWork = document.createElement('button');
+        btnWork.className = 'choice-btn';
+        btnWork.innerHTML = `<strong>Take the job</strong><div class="choice-effects">INCOME: £${currency.format(Math.abs(workIncome))} | HP: -4 | JOY: -10</div>`;
+        btnWork.onclick = () => { applyStats(workIncome, -4, -10, "Part-Time Work"); if (!checkGameOver()) loadLifestyleChoice(); };
+        container.appendChild(btnWork);
+
+        const btnRest = document.createElement('button');
+        btnRest.className = 'choice-btn';
+        btnRest.innerHTML = `<strong>Stay fully retired</strong><div class="choice-effects">INCOME: £0 | HP: 0 | JOY: +2</div>`;
+        btnRest.onclick = () => { applyStats(0, 0, 2, "Full Retirement"); if (!checkGameOver()) loadLifestyleChoice(); };
+        container.appendChild(btnRest);
+    }
+
+    // PHASE 1: Lifestyle
     function loadLifestyleChoice() {
-        // LATE GAME BOSS CHECK: Social Care
         if (state.age >= 80 && state.health < 30) {
             triggerCareHomeBoss();
             return;
@@ -503,10 +521,20 @@
         const container = document.getElementById('choices-container');
         container.innerHTML = ''; 
 
+        // Base costs spiked by 20%
+        let baseFrugal = 14400;
+        let baseComfort = 26400;
+        let baseLux = 45600;
+
+        // Couple multiplier
+        if (state.partner === 'couple') {
+            baseFrugal *= 1.5; baseComfort *= 1.5; baseLux *= 1.5;
+        }
+
         const lifestyles = [
-            { text: "Frugal (Survival Mode)", cost: 12000, h: -10, j: -15 },
-            { text: "Comfortable (Standard)", cost: 22000, h: 0, j: 0 },
-            { text: "Luxurious (Premium)", cost: 38000, h: 8, j: 10 }
+            { text: "Frugal (Survival Mode)", cost: baseFrugal, h: -10, j: -15 },
+            { text: "Comfortable (Standard)", cost: baseComfort, h: 0, j: 0 },
+            { text: "Luxurious (Premium)", cost: baseLux, h: 8, j: 10 }
         ];
 
         lifestyles.forEach(choice => {
@@ -534,20 +562,24 @@
         const container = document.getElementById('choices-container');
         container.innerHTML = ''; 
         
-        const careCost = Math.floor(50000 * state.inflationMult);
+        let baseCareCost = 50000;
+        if (state.partner === 'couple') baseCareCost *= 2;
+
+        const careCost = Math.floor(baseCareCost * state.inflationMult);
         const btn = document.createElement('button');
         btn.className = 'choice-btn';
         btn.innerHTML = `
             <strong style="color:var(--neon-red);">Accept Mandate & Pay Fees</strong>
-            <div class="choice-effects">COST: £${currency.format(careCost)} | HP: +10 | JOY: -20</div>
+            <div class="choice-effects">COST: £${currency.format(careCost)} | HP: +10 | JOY: -25</div>
         `;
         btn.onclick = () => {
-            applyStats(careCost, 10, -20, "Mandatory Care Fees");
+            applyStats(careCost, 10, -25, "Mandatory Care Fees");
             if (!checkGameOver()) loadScenario();
         };
         container.appendChild(btn);
     }
 
+    // PHASE 2: Unexpected Event
     function loadScenario() {
         document.getElementById('event-step').innerText = "PHASE 2: ANOMALY DETECTED";
         
@@ -580,48 +612,60 @@
         let min, max;
         if (state.risk === 'low') { min = 0.02; max = 0.05; }
         else if (state.risk === 'high') { min = -0.20; max = 0.25; }
-        else { min = -0.05; max = 0.12; } // Medium
-        
+        else { min = -0.05; max = 0.12; } 
         return (Math.random() * (max - min)) + min;
     }
 
     function endOfYearTransition() {
         state.age++;
         state.turn++;
-        state.inflationMult *= 1.03; // 3% inflation
+        state.inflationMult *= 1.04; // Increased difficulty: 4% inflation
         
-        // Market Volatility applied to remaining pot
         const marketReturn = calculateMarketReturn();
         const marketGains = Math.floor(state.money * marketReturn);
         state.money += marketGains;
 
-        // Add Pension
-        const pensionThisYear = Math.floor(state.basePension * state.inflationMult);
-        state.money += pensionThisYear;
-        
-        state.health -= 4; // Aging penalty
-
         let marketText = marketGains >= 0 ? `+£${currency.format(marketGains)}` : `-£${currency.format(Math.abs(marketGains))}`;
-        document.getElementById('ui-log').innerText = `YEAR ${state.turn-1} END. Market Return: ${marketText}. Pension: +£${currency.format(pensionThisYear)}.`;
-        document.getElementById('ui-log-alert').innerText = "AGING PENALTY: -4 HP";
+        let logMsg = `YEAR ${state.turn-1} END. Market: ${marketText}.`;
+
+        // Check State Pension Age (67+)
+        if (state.age >= 67) {
+            let pensionMult = state.partner === 'couple' ? 2 : 1;
+            let pensionThisYear = Math.floor((state.basePension * pensionMult) * state.inflationMult);
+            state.money += pensionThisYear;
+            logMsg += ` Pension: +£${currency.format(pensionThisYear)}.`;
+        } else {
+            logMsg += ` (Too young for State Pension).`;
+        }
+        
+        // Progressive Health Drain: Gets worse as you age
+        let healthDrain = 3 + Math.floor(Math.max(0, state.age - 65) / 5); 
+        state.health -= healthDrain; 
+
+        document.getElementById('ui-log').innerText = logMsg;
+        document.getElementById('ui-log-alert').innerText = `AGING PENALTY: -${healthDrain} HP`;
 
         updateUI();
         if(!checkGameOver()) {
-            setTimeout(() => { sfxBlip(); loadLifestyleChoice(); }, 2500); 
+            setTimeout(() => { 
+                sfxBlip(); 
+                if (state.age < 75) loadWorkChoice();
+                else loadLifestyleChoice(); 
+            }, 3000); 
         }
     }
 
     function restartWithHindsight(newRate) {
         sfxBlip();
         document.getElementById('inp-contribution').value = newRate;
-        document.getElementById('hindsight-msg').innerText = `TIMELINE ALTERED: CONTRIBUTION AT ${newRate * 100}%`;
+        document.getElementById('hindsight-msg').innerText = `TIMELINE ALTERED: CONTRIBUTION AT ${newRate}%`;
         document.getElementById('game-over-screen').classList.add('hidden');
         document.getElementById('setup-screen').classList.remove('hidden');
     }
 
     function resetToStart() {
         sfxBlip();
-        document.getElementById('inp-contribution').value = 0.08;
+        document.getElementById('inp-contribution').value = 8;
         document.getElementById('hindsight-msg').innerText = "";
         document.getElementById('game-over-screen').classList.add('hidden');
         document.getElementById('setup-screen').classList.remove('hidden');
